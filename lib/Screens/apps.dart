@@ -8,8 +8,8 @@ class MyApps extends StatefulWidget {
 }
 
 class _MyAppsState extends State<MyApps> {
-  bool _showSystemApps = false;
-  bool _onlyLaunchableApps = false;
+  bool _showSystemApps = true;
+  bool _onlyLaunchableApps = true;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +96,7 @@ class _ListAppsPagesContent extends StatelessWidget {
           return Scrollbar(
             child: GridView.builder(
                 physics: BouncingScrollPhysics(),
-                shrinkWrap: true,
+                // shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4),
                 scrollDirection: Axis.vertical,

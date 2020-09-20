@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:launcher/apps.dart';
-import 'package:launcher/new.dart';
+import 'Screens/apps.dart';
+import 'Screens/Home.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: "Ubuntu Launcher",
       initialRoute: "/",
       routes: {
-        '/': (context) => New(),
+        '/': (context) => Home(),
         MyApps.route: (context) => MyApps(),
       },
     );

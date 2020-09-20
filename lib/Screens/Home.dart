@@ -1,10 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:launcher/apps.dart';
+import 'package:launcher/Screens/apps.dart';
 import 'package:vector_math/vector_math.dart' as math;
 import 'package:url_launcher/url_launcher.dart';
 
-class New extends StatelessWidget {
+class Home extends StatelessWidget {
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   _launchCaller() async {
