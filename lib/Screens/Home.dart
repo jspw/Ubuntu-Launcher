@@ -1,11 +1,20 @@
-
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:launcher/Screens/apps.dart';
 import 'package:vector_math/vector_math.dart' as math;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:device_apps/device_apps.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return HomeState();
+  }
+}
+
+class HomeState extends State {
   var scaffoldKey = GlobalKey<ScaffoldState>();
+
+  List<Application> apps;
 
   _launchCaller() async {
     const url = "tel:";
@@ -25,6 +34,30 @@ class Home extends StatelessWidget {
     }
   }
 
+  void appInfo() async {
+    apps = await DeviceApps.getInstalledApplications(
+      includeAppIcons: true,
+      includeSystemApps: true,
+      onlyAppsWithLaunchIntent: true,
+    );
+
+    apps.sort(
+        (a, b) => a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
+
+    print(apps);
+  }
+
+  void appsRef() {
+    appInfo();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    appInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -40,11 +73,137 @@ class Home extends StatelessWidget {
               height: 30.0,
             ),
             GestureDetector(
-              onTap: () => Apps(context),
+              onTap: () => showGeneralDialog(
+                barrierColor: Colors.black.withOpacity(0.5),
+                transitionBuilder: (context, a1, a2, widget) {
+                  return Transform.scale(
+                    scale: a1.value,
+                    child: Opacity(
+                      opacity: a1.value,
+                      child: apps.length >= 1
+                          ? Scaffold(
+                              backgroundColor: Colors.transparent,
+                              appBar: AppBar(
+                                backgroundColor: Colors.transparent,
+                                title: Text('Applications'),
+                                titleSpacing: 2.0,
+                                centerTitle: true,
+                                leading: GestureDetector(
+                                  onTap: () => Navigator.pop(context),
+                                  child: Container(
+                                    color: Colors.black,
+                                    child: IconButton(
+                                        icon: Icon(
+                                          Icons.arrow_back_ios,
+                                          color: Colors.white,
+                                          size: 35.0,
+                                        ),
+                                        onPressed: null),
+                                  ),
+                                ),
+                              ),
+                              body: RefreshIndicator(
+                                color: Colors.transparent,
+                                onRefresh: () {
+                                  setState(() {
+                                    appInfo();
+                                  });
+                                },
+                                child: GridView.count(
+                                  physics: BouncingScrollPhysics(),
+                                  crossAxisCount: 4,
+                                  children: List.generate(apps.length, (int i) {
+                                    Application app = apps[i];
+                                    return GestureDetector(
+                                        // onDoubleTap: () => showGeneralDialog(
+                                        //       context: context,
+                                        //       pageBuilder:
+                                        //           (context, anim1, anim2) {},
+                                        //       barrierDismissible: true,
+                                        //       barrierColor:
+                                        //           Colors.black.withOpacity(0.4),
+                                        //       barrierLabel: '',
+                                        //       transitionBuilder: (context,
+                                        //           anim1, anim2, child) {
+                                        //         return Transform.rotate(
+                                        //           angle: math.radians(
+                                        //               anim1.value * 360),
+                                        //           child: Opacity(
+                                        //             opacity: anim1.value,
+                                        //             child: AlertDialog(
+                                        //               shape: OutlineInputBorder(
+                                        //                   borderRadius:
+                                        //                       BorderRadius
+                                        //                           .circular(
+                                        //                               16.0)),
+                                        //               title: Text(
+                                        //                   "Application Detail"),
+                                        //             ),
+                                        //           ),
+                                        //         );
+                                        //       },
+                                        //       transitionDuration:
+                                        //           Duration(milliseconds: 300),
+                                        //     ),
+                                        onTap: () =>
+                                            DeviceApps.openApp(app.packageName),
+                                        child: GridTile(
+                                          child: app is ApplicationWithIcon
+                                              ? Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(5.0),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: <Widget>[
+                                                      Container(
+                                                        // height: 45,
+                                                        // width: 45,
+                                                        child: CircleAvatar(
+                                                          backgroundImage:
+                                                              MemoryImage(
+                                                            app.icon,
+                                                          ),
+                                                          backgroundColor:
+                                                              Colors.white,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        app.appName,
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              : null,
+                                        ));
+                                  }),
+                                ),
+                              ),
+                            )
+                          : CircularProgressIndicator(),
+                    ),
+                  );
+                },
+                transitionDuration: Duration(milliseconds: 300),
+                barrierDismissible: true,
+                barrierLabel: '',
+                context: context,
+                pageBuilder: (context, animation1, animation2) {},
+              ),
               child: Container(
-                width: 35, 
+                width: 35,
                 child: Image.asset(
-                  
                   "assets/images/ic_launcher.png",
                   fit: BoxFit.cover,
                 ),
@@ -64,22 +223,22 @@ class Home extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
+            // buildIcons(
+            //   () => print("Hello"),
+            //   Icon(
+            //     Icons.camera,
+            //     color: Colors.white,
+            //   ),
+            // ),
+            // buildIcons(
+            //   () => print("Hello"),
+            //   Icon(
+            //     Icons.photo_album,
+            //     color: Colors.white,
+            //   ),
+            // ),
             buildIcons(
-              () => print("Hello"),
-              Icon(
-                Icons.camera,
-                color: Colors.white,
-              ),
-            ),
-            buildIcons(
-              () => print("Hello"),
-              Icon(
-                Icons.photo_album,
-                color: Colors.white,
-              ),
-            ),
-            buildIcons(
-              () => print("object"),
+              () =>AppSettings.openAppSettings(),
               Icon(
                 Icons.settings,
                 color: Colors.white,
@@ -121,47 +280,4 @@ Widget buildIcons(Function fn, Icon xicon) {
     padding: const EdgeInsets.only(top: 15.0),
     child: IconButton(icon: xicon, onPressed: fn),
   );
-}
-
-void Apps(BuildContext context) {
-  showGeneralDialog(
-      barrierColor: Colors.black.withOpacity(0.5),
-      transitionBuilder: (context, a1, a2, widget) {
-        return Transform.scale(
-          scale: a1.value,
-          child: Opacity(
-            opacity: a1.value,
-            child: MyApps(),
-          ),
-        );
-      },
-      transitionDuration: Duration(milliseconds: 200),
-      barrierDismissible: true,
-      barrierLabel: '',
-      context: context,
-      pageBuilder: (context, animation1, animation2) {});
-}
-
-void AppDetail(BuildContext context) {
-  showGeneralDialog(
-      context: context,
-      pageBuilder: (context, anim1, anim2) {},
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.4),
-      barrierLabel: '',
-      transitionBuilder: (context, anim1, anim2, child) {
-        return Transform.rotate(
-          angle: math.radians(anim1.value * 360),
-          child: Opacity(
-            opacity: anim1.value,
-            child: AlertDialog(
-              shape:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(16.0)),
-              title: Text('Hello!!'),
-              content: Text('How are you?'),
-            ),
-          ),
-        );
-      },
-      transitionDuration: Duration(milliseconds: 300));
 }
