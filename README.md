@@ -9,6 +9,18 @@ Features :
 - Add Free
 - Fast
 
+Screenshots : 
+- Home Screen
+  
+    ![](ss/pic3.png)
+
+- Slidebar (Menu Options)
+
+    ![](ss/pic2.png)
+
+- Apps
+
+    ![](ss/pic1.png)
 
 Demo :
 
