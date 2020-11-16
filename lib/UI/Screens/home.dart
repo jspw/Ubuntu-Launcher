@@ -1,10 +1,8 @@
-import 'package:app_settings/app_settings.dart';
-import 'package:flutter/material.dart';
-import 'package:vector_math/vector_math.dart' as math;
-import 'package:url_launcher/url_launcher.dart';
-import 'package:device_apps/device_apps.dart';
+import '../../Utility/libraries.dart';
 
 class Home extends StatefulWidget {
+  static const route = '/home';
+
   @override
   State<StatefulWidget> createState() {
     return HomeState();
@@ -53,9 +51,8 @@ class HomeState extends State {
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
     appInfo();
+    super.initState();
   }
 
   @override
@@ -238,7 +235,7 @@ class HomeState extends State {
             //   ),
             // ),
             buildIcons(
-              () =>AppSettings.openAppSettings(),
+              () => AppSettings.openAppSettings(),
               Icon(
                 Icons.settings,
                 color: Colors.white,

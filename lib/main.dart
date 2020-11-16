@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'Screens/Home.dart';
+import 'Utility/libraries.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,19 +7,16 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    // throw UnimplementedError();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.pink,
+        accentColor: Colors.white
       ),
       title: "Ubuntu Launcher",
-      initialRoute: "/",
-      routes: {
-        '/': (context) => Home(),
-      },
+      initialRoute: Routes.initialScreen(),
+      routes: Routes.routes(),
     );
   }
 }
