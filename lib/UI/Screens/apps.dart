@@ -56,7 +56,7 @@ class AppsState extends State {
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
-            // color: Colors.black,
+            color: Colors.pink[900],
             child: IconButton(
                 icon: Icon(
                   Icons.arrow_back_ios,
@@ -71,7 +71,28 @@ class AppsState extends State {
         color: Colors.transparent,
         onRefresh: () => appInfo(),
         child: apps == null
-            ? Center(child: Image.asset("assets/images/loader.gif"))
+            ? Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    // CircularProgressIndicator(
+                    //   backgroundColor: Colors.pink,
+
+                    //   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    // ),
+                    Container(
+                      height: 50,
+                      width: 50,
+                      color: Colors.transparent,
+                      child: Image.asset(
+                        "assets/images/loader2.gif",
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ],
+                ),
+              )
             : GridView.count(
                 physics: BouncingScrollPhysics(),
                 crossAxisCount: 4,
@@ -80,10 +101,9 @@ class AppsState extends State {
                   return GestureDetector(
                       onTap: () => DeviceApps.openApp(app.packageName),
                       child: app is ApplicationWithIcon
-                          ? Card(
-                              color: Colors.transparent,
+                          ? GridTile(
                               child: Padding(
-                                padding: const EdgeInsets.all(5.0),
+                                padding: const EdgeInsets.all(10.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment:

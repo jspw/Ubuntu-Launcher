@@ -121,20 +121,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.4"
-  permission_handler:
-    dependency: "direct main"
-    description:
-      name: permission_handler
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.0.1+1"
-  permission_handler_platform_interface:
-    dependency: transitive
-    description:
-      name: permission_handler_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
   petitparser:
     dependency: transitive
     description:
@@ -203,13 +189,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
-  system_setting:
-    dependency: "direct main"
-    description:
-      name: system_setting
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.3"
   term_glyph:
     dependency: transitive
     description:

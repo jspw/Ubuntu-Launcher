@@ -7,7 +7,6 @@ export 'package:flutter/material.dart';
 export 'package:app_settings/app_settings.dart';
 export 'package:url_launcher/url_launcher.dart';
 export 'package:device_apps/device_apps.dart';
-export 'package:system_setting/system_setting.dart';
 
 //Custom
 
