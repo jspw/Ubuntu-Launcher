@@ -1,0 +1,1 @@
+<i>Ubuntu Launcher</i> is a lightweight replacement for your homescreen application. It‘s still in its early stages of development, so more features etc. are to be expected hopefully soon.
