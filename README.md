@@ -1,4 +1,4 @@
-# Ubuntu Launcher 
+# Ubuntu Launcher
 
 It's a custom lightweight android launcher.
 
@@ -9,21 +9,22 @@ Features :
 - Add Free
 - Fast
 
-Screenshots : 
+Screenshots :
+
 - Home Screen
-  
-    ![](ss/pic3.png)
+
+  ![Home](fastlane/metadata/android/en-US/images/phoneScreenshots/1.png)
 
 - Slidebar (Menu Options)
 
-    ![](ss/pic2.png)
+  ![Slidebar](fastlane/metadata/android/en-US/images/phoneScreenshots/2.png)
 
-- Apps
+- App Drawer
 
-    ![](ss/pic1.png)
+  ![Drawer](fastlane/metadata/android/en-US/images/phoneScreenshots/3.png)
 
 Demo :
 
-![](ss/view.gif)
+![Demo](fastlane/metadata/android/en-US/images/phoneScreenshots/4.gif)
 
-I will add some features asap :3 
+I will add some features asap :3
