@@ -1,10 +1,12 @@
 import 'libraries.dart';
 
 class RouteAnimator {
-  static Route createRoute(List<Application> apps) {
+  static Route createRoute(var apps, String sortType) {
     {
       return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => Apps(apps),
+        opaque: false,
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            Apps(apps, sortType),
         transitionsBuilder: (context, a1, a2, widget) {
           return Transform.scale(
             scale: a1.value,
