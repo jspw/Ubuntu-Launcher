@@ -44,6 +44,6 @@ Screenshots :
 
 Demo :
 
-![Demo](fastlane/metadata/android/en-US/images/phoneScreenshots/4.gif)
+![Demo Video](fastlane/metadata/android/en-US/images/phoneScreenshots/8.gif)
 
 I will add some more features asap :3
