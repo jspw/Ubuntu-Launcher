@@ -5,26 +5,45 @@ It's a custom lightweight android launcher.
 Features :
 
 - Simple
-- Lightweight
-- Add Free
 - Fast
+- Ad Free
+- Lightweight
+
+
+Download Apk : [Ubuntu Launcher 2.0.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.0.0)
 
 Screenshots :
 
-- Home Screen
+- **Loading Screen** (Loading the apps installed in the phone)
 
-  ![Home](fastlane/metadata/android/en-US/images/phoneScreenshots/1.png)
+  ![loading](fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg)
 
-- Slidebar (Menu Options)
+- **Home Screen** (Empty for simplicity)
 
-  ![Slidebar](fastlane/metadata/android/en-US/images/phoneScreenshots/2.png)
+  ![Slidebar](fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg)
 
-- App Drawer
+- **Side Bar** (Menu Options) -> Swap from Left to Righ to open
 
-  ![Drawer](fastlane/metadata/android/en-US/images/phoneScreenshots/3.png)
+  ![sidebar](fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg)
+
+- **App Drawer** (All installed accessable apps)
+
+  ![apps](fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpg)
+
+- **Sort Option** (Sort by App Name,Installation and Update time)
+
+  ![SortOption](fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg)
+
+- **Sorted** (according to apps Installation Time)
+
+  ![sortedApps](fastlane/metadata/android/en-US/images/phoneScreenshots/6.jpg)
+
+- **Refress Apps** (Pull down to refress)
+
+  ![refress](fastlane/metadata/android/en-US/images/phoneScreenshots/7.jpg)
 
 Demo :
 
 ![Demo](fastlane/metadata/android/en-US/images/phoneScreenshots/4.gif)
 
-I will add some features asap :3
+I will add some more features asap :3

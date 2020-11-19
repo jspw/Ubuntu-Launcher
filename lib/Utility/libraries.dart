@@ -2,6 +2,7 @@
 
 //default
 export 'package:flutter/material.dart';
+export 'dart:async';
 
 //installed
 export 'package:app_settings/app_settings.dart';

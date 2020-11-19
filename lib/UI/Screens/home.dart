@@ -22,8 +22,10 @@ class HomeState extends State {
 
   double sidebarOpacity = 1;
 
+  bool autoOpenDrawer;
+
   _launchCaller() async {
-    const url = "tel:911";
+    const url = "tel:";
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -57,15 +59,46 @@ class HomeState extends State {
       if (app.appName == "Camera") {
         cameraPackageNameDemo = app.packageName;
       }
-      if (app.appName == "Messages") {
+      if (app.appName == "Messages" || app.appName == "Messaging") {
         messagesPackageNameDemo = app.packageName;
       }
+    }
+
+    //messaging apps packageNames in different android phones
+
+//      "com.google.android.apps.messaging"
+//      "com.jb.gosms"
+//      "com.concentriclivers.mms.com.android.mms"
+//      "fr.slvn.mms"
+//      "com.android.mms"
+//      "com.sonyericsson.conversations"
+
+    //check message app installed or  not
+    if (await DeviceApps.isAppInstalled(messagesPackageNameDemo)) {
+      messagesPackageNameDemo = messagesPackageNameDemo;
+    } else if (await DeviceApps.isAppInstalled(
+        "com.google.android.apps.messaging")) {
+      messagesPackageNameDemo = "com.google.android.apps.messaging";
+    } else if (await DeviceApps.isAppInstalled("com.jb.gosms")) {
+      messagesPackageNameDemo = "com.jb.gosms";
+    } else if (await DeviceApps.isAppInstalled(
+        "com.concentriclivers.mms.com.android.mms")) {
+      messagesPackageNameDemo = "com.concentriclivers.mms.com.android.mms";
+    } else if (await DeviceApps.isAppInstalled("fr.slvn.mms")) {
+      messagesPackageNameDemo = "fr.slvn.mms";
+    } else if (await DeviceApps.isAppInstalled("com.android.mms")) {
+      messagesPackageNameDemo = "com.android.mms";
+    } else if (await DeviceApps.isAppInstalled(
+        "com.sonyericsson.conversations")) {
+      messagesPackageNameDemo = "com.sonyericsson.conversations";
     }
 
     setState(() {
       settingsPackageName = settingsPackageNameDemo;
       cameraPackageName = cameraPackageNameDemo;
-      messagesPackageName = messagesPackageNameDemo;
+      if (messagesPackageNameDemo == null) {
+      } else
+        messagesPackageName = messagesPackageNameDemo;
     });
   }
 
@@ -90,8 +123,6 @@ class HomeState extends State {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    // throw UnimplementedErro
     return Scaffold(
       drawer: Opacity(
         opacity: sidebarOpacity,
@@ -148,33 +179,43 @@ class HomeState extends State {
           ),
         ),
       ),
-      body: Container(
-        key: scaffoldKey,
-        decoration: BoxDecoration(
-            image: DecorationImage(
-          image: AssetImage((apps == null)
-              ? "assets/images/ubuntu-splash-screen.gif"
-              : "assets/images/wallpaper.jpg"),
-          fit: BoxFit.cover,
-        )),
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Row(
-          children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                scaffoldKey.currentState.openDrawer();
-              },
-              child: Container(
-                  color: Colors.transparent,
-                  height: MediaQuery.of(context).size.height,
-                  child: SizedBox(
-                    width: 70,
-                  )),
+      body: (apps == null)
+          ? Container(
+              key: scaffoldKey,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                image: AssetImage("assets/images/ubuntu-splash-screen.gif"),
+                fit: BoxFit.cover,
+              )),
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+            )
+          : Container(
+              key: scaffoldKey,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                image: AssetImage("assets/images/wallpaper.jpg"),
+                fit: BoxFit.cover,
+              )),
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () {
+                      scaffoldKey.currentState.openDrawer();
+                    },
+                    child: Container(
+                        color: Colors.transparent,
+                        height: MediaQuery.of(context).size.height,
+                        child: SizedBox(
+                          width: 70,
+                        )),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
+      drawerEnableOpenDragGesture: (apps == null) ? false : true,
     );
   }
 }
