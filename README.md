@@ -9,6 +9,11 @@ Features :
 - Ad Free
 - Lightweight
 
+### Requirments :
+
+- MinSdkVersion 16 (Android 4.1.x)
+- **TargetSdkVersion 28 (Android 9)**
+- Hopefully will work fine above android 4.1.x
 
 Download Apk : [Ubuntu Launcher 2.0.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.0.0)
 
