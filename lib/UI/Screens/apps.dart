@@ -22,7 +22,7 @@ class AppsState extends State {
   List<String> sortTypes = [
     'Alphabetically',
     'Installation Time',
-    'UpdateTime',
+    'Update Time',
   ];
 
   String sortType;
@@ -43,7 +43,7 @@ class AppsState extends State {
             a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
       else if (sortType == "Installation Time")
         apps.sort((b, a) => a.installTimeMillis.compareTo(b.installTimeMillis));
-      else if (sortType == "UpdateTime")
+      else if (sortType == "Update Time")
         apps.sort((b, a) => a.updateTimeMillis.compareTo(b.updateTimeMillis));
     });
   }
@@ -95,87 +95,90 @@ class AppsState extends State {
   Widget build(BuildContext context) {
     // TODO: implement build
     // throw UnimplementedError();
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        title: Text(
-          'Applications',
-          style: TextStyle(fontSize: 25),
-        ),
-        titleSpacing: 1.2,
-        centerTitle: true,
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context, [apps, sortType]),
-          child: Container(
-            child: Image.asset(
-              "assets/images/ic_launcher.png",
-              fit: BoxFit.cover,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: Text(
+            'Applications',
+            style: TextStyle(fontSize: 25),
+          ),
+          titleSpacing: 1.2,
+          centerTitle: true,
+          leading: GestureDetector(
+            onTap: () => Navigator.pop(context, [apps, sortType]),
+            child: Container(
+              child: Image.asset(
+                "assets/images/ic_launcher.png",
+                fit: BoxFit.cover,
+              ),
             ),
           ),
+          actions: <Widget>[
+            sortTypeList(),
+          ],
         ),
-        actions: <Widget>[
-          sortTypeList(),
-        ],
-      ),
-      body: RefreshIndicator(
-        color: Colors.transparent,
-        onRefresh: () => appInfo(),
-        child: apps == null
-            ? Center(
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  color: Colors.transparent,
-                  child: Image.asset(
-                    "assets/images/loader2.gif",
-                    fit: BoxFit.cover,
+        body: RefreshIndicator(
+          color: Colors.transparent,
+          onRefresh: () => appInfo(),
+          child: apps == null
+              ? Center(
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    color: Colors.transparent,
+                    child: Image.asset(
+                      "assets/images/loader2.gif",
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-              )
-            : GridView.count(
-                padding: const EdgeInsets.only(left: 50),
-                physics: BouncingScrollPhysics(),
-                crossAxisCount: 4,
-                children: List.generate(apps.length, (int i) {
-                  Application app = apps[i];
-                  return GestureDetector(
-                      onTap: () {
-                        DeviceApps.openApp(app.packageName);
-                        Navigator.pop(context, [apps, sortType]);
-                      },
-                      child: app is ApplicationWithIcon
-                          ? GridTile(
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    Container(
-                                      child: CircleAvatar(
-                                        backgroundImage: MemoryImage(
-                                          app.icon,
+                )
+              : GridView.count(
+                  padding: const EdgeInsets.only(left: 50),
+                  physics: BouncingScrollPhysics(),
+                  crossAxisCount: 4,
+                  children: List.generate(apps.length, (int i) {
+                    Application app = apps[i];
+                    return GestureDetector(
+                        onTap: () {
+                          DeviceApps.openApp(app.packageName);
+                          Navigator.pop(context, [apps, sortType]);
+                        },
+                        child: app is ApplicationWithIcon
+                            ? GridTile(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Container(
+                                        child: CircleAvatar(
+                                          backgroundImage: MemoryImage(
+                                            app.icon,
+                                          ),
+                                          backgroundColor: Colors.white,
                                         ),
-                                        backgroundColor: Colors.white,
                                       ),
-                                    ),
-                                    Text(
-                                      app.appName,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
+                                      Text(
+                                        app.appName,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            )
-                          : null);
-                }),
-              ),
+                              )
+                            : null);
+                  }),
+                ),
+        ),
       ),
     );
   }

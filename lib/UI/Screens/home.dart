@@ -41,11 +41,11 @@ class HomeState extends State {
       apps = data;
     });
 
-    print(apps);
+    // print(apps);
 
-    for (int i = 0; i < apps.length; i++) {
-      print(apps[i].appName);
-    }
+    // for (int i = 0; i < apps.length; i++) {
+    //   print(apps[i].appName);
+    // }
 
     String settingsPackageNameDemo;
     String cameraPackageNameDemo;
@@ -123,99 +123,102 @@ class HomeState extends State {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: Opacity(
-        opacity: sidebarOpacity,
-        child: Container(
-          color: Colors.pink.withOpacity(0.5),
-          height: MediaQuery.of(context).size.height,
-          width: 60.0,
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 30.0,
-              ),
-              GestureDetector(
-                onTap: () {
-                  navigateScreen();
-                },
-                child: Container(
-                  width: 35,
-                  child: Image.asset(
-                    "assets/images/ic_launcher.png",
-                    fit: BoxFit.cover,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        drawer: Opacity(
+          opacity: sidebarOpacity,
+          child: Container(
+            color: Colors.pink.withOpacity(0.5),
+            height: MediaQuery.of(context).size.height,
+            width: 60.0,
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: 30.0,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    navigateScreen();
+                  },
+                  child: Container(
+                    width: 35,
+                    child: Image.asset(
+                      "assets/images/ic_launcher.png",
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
-              buildIcons(
-                _launchCaller,
-                Icon(
-                  Icons.call,
-                  color: Colors.white,
+                buildIcons(
+                  _launchCaller,
+                  Icon(
+                    Icons.call,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              buildIcons(
-                () => DeviceApps.openApp(messagesPackageName),
-                Icon(
-                  Icons.message,
-                  color: Colors.white,
+                buildIcons(
+                  () => DeviceApps.openApp(messagesPackageName),
+                  Icon(
+                    Icons.message,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              buildIcons(
-                () => DeviceApps.openApp(cameraPackageName),
-                Icon(
-                  Icons.camera,
-                  color: Colors.white,
+                buildIcons(
+                  () => DeviceApps.openApp(cameraPackageName),
+                  Icon(
+                    Icons.camera,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              buildIcons(
-                () => DeviceApps.openApp(settingsPackageName),
-                Icon(
-                  Icons.settings,
-                  color: Colors.white,
+                buildIcons(
+                  () => DeviceApps.openApp(settingsPackageName),
+                  Icon(
+                    Icons.settings,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-      body: (apps == null)
-          ? Container(
-              key: scaffoldKey,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                image: AssetImage("assets/images/ubuntu-splash-screen.gif"),
-                fit: BoxFit.cover,
-              )),
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-            )
-          : Container(
-              key: scaffoldKey,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                image: AssetImage("assets/images/wallpaper.jpg"),
-                fit: BoxFit.cover,
-              )),
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      scaffoldKey.currentState.openDrawer();
-                    },
-                    child: Container(
-                        color: Colors.transparent,
-                        height: MediaQuery.of(context).size.height,
-                        child: SizedBox(
-                          width: 70,
-                        )),
-                  ),
-                ],
+        body: (apps == null)
+            ? Container(
+                key: scaffoldKey,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage("assets/images/ubuntu-splash-screen.gif"),
+                  fit: BoxFit.cover,
+                )),
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+              )
+            : Container(
+                key: scaffoldKey,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage("assets/images/wallpaper.jpg"),
+                  fit: BoxFit.cover,
+                )),
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {
+                        scaffoldKey.currentState.openDrawer();
+                      },
+                      child: Container(
+                          color: Colors.transparent,
+                          height: MediaQuery.of(context).size.height,
+                          child: SizedBox(
+                            width: 70,
+                          )),
+                    ),
+                  ],
+                ),
               ),
-            ),
-      drawerEnableOpenDragGesture: (apps == null) ? false : true,
+        drawerEnableOpenDragGesture: (apps == null) ? false : true,
+      ),
     );
   }
 }
