@@ -128,56 +128,58 @@ class HomeState extends State {
       child: Scaffold(
         drawer: Opacity(
           opacity: sidebarOpacity,
-          child: Container(
-            color: Colors.pink.withOpacity(0.5),
-            height: MediaQuery.of(context).size.height,
-            width: 60.0,
-            child: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 30.0,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    navigateScreen();
-                  },
-                  child: Container(
-                    width: 35,
-                    child: Image.asset(
-                      "assets/images/ic_launcher.png",
-                      fit: BoxFit.cover,
+          child: SafeArea(
+            child: Container(
+              color: Colors.pink.withOpacity(0.5),
+              height: MediaQuery.of(context).size.height,
+              width: 60.0,
+              child: Column(
+                children: <Widget>[
+                  // SizedBox(
+                  //   height: 30.0,
+                  // ),
+                  GestureDetector(
+                    onTap: () {
+                      navigateScreen();
+                    },
+                    child: Container(
+                      width: 35,
+                      child: Image.asset(
+                        "assets/images/ic_launcher.png",
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
-                buildIcons(
-                  _launchCaller,
-                  Icon(
-                    Icons.call,
-                    color: Colors.white,
+                  buildIcons(
+                    _launchCaller,
+                    Icon(
+                      Icons.call,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                buildIcons(
-                  () => DeviceApps.openApp(messagesPackageName),
-                  Icon(
-                    Icons.message,
-                    color: Colors.white,
+                  buildIcons(
+                    () => DeviceApps.openApp(messagesPackageName),
+                    Icon(
+                      Icons.message,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                buildIcons(
-                  () => DeviceApps.openApp(cameraPackageName),
-                  Icon(
-                    Icons.camera,
-                    color: Colors.white,
+                  buildIcons(
+                    () => DeviceApps.openApp(cameraPackageName),
+                    Icon(
+                      Icons.camera,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                buildIcons(
-                  () => DeviceApps.openApp(settingsPackageName),
-                  Icon(
-                    Icons.settings,
-                    color: Colors.white,
+                  buildIcons(
+                    () => DeviceApps.openApp(settingsPackageName),
+                    Icon(
+                      Icons.settings,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

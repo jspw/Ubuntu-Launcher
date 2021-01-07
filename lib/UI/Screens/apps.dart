@@ -1,5 +1,7 @@
 import '../../Utility/libraries.dart';
 
+
+
 class Apps extends StatefulWidget {
   List<Application> apps;
   String sortType;
@@ -18,6 +20,7 @@ class AppsState extends State {
   List<Application> apps;
 
   bool isSort = true;
+
 
   List<String> sortTypes = [
     'Alphabetically',
@@ -95,6 +98,10 @@ class AppsState extends State {
   Widget build(BuildContext context) {
     // TODO: implement build
     // throw UnimplementedError();
+
+     final double height = MediaQuery.of(context).size.height;
+     final double width = MediaQuery.of(context).size.width;
+
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -151,7 +158,8 @@ class AppsState extends State {
                                 child: Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: <Widget>[
