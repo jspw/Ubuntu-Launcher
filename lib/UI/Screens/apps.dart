@@ -1,7 +1,5 @@
 import '../../Utility/libraries.dart';
 
-
-
 class Apps extends StatefulWidget {
   List<Application> apps;
   String sortType;
@@ -21,7 +19,6 @@ class AppsState extends State {
 
   bool isSort = true;
 
-
   List<String> sortTypes = [
     'Alphabetically',
     'Installation Time',
@@ -31,7 +28,6 @@ class AppsState extends State {
   String sortType;
 
   AppsState(this.apps, this.sortType);
-
   Future<void> appInfo() async {
     var data = await AppInformations.appInfo(sortType);
     setState(() {
@@ -96,11 +92,8 @@ class AppsState extends State {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    // throw UnimplementedError();
-
-     final double height = MediaQuery.of(context).size.height;
-     final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -151,8 +144,23 @@ class AppsState extends State {
                     return GestureDetector(
                         onTap: () {
                           DeviceApps.openApp(app.packageName);
+                          // DeviceApps.openAppSettings(app.packageName);
                           Navigator.pop(context, [apps, sortType]);
                         },
+                        onLongPress: () async {
+                          if (LocalPlatform().isAndroid) {
+                            final AndroidIntent intent = AndroidIntent(
+                              action: 'action_application_details_settings',
+                              data: 'package:' +
+                                  app.packageName, // replace com.example.app with your applicationId
+                            );
+                            await intent.launch();
+                          }
+
+                          // Navigator.pop(context, [apps, sortType]);
+                        },
+                        // onLongPress: () =>
+                        //     _openApplicationDetails(app.packageName),
                         child: app is ApplicationWithIcon
                             ? GridTile(
                                 child: Padding(

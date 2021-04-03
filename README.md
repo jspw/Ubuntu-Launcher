@@ -15,9 +15,14 @@ Features :
 - **TargetSdkVersion 28 (Android 9)**
 - Hopefully will work fine above android 4.1.x
 
-Download Apk : [Ubuntu Launcher 2.0.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.0.0)
+Download Latest Apk : [Ubuntu Launcher 2.1.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.1.0)
 
-Screenshots :
+
+#### Latest Feature : 
+
+- Long Press to open App Settings
+
+### Screenshots :
 
 - **Loading Screen** (Loading the apps installed in the phone)
 
@@ -38,14 +43,6 @@ Screenshots :
 - **Sort Option** (Sort by App Name,Installation and Update time)
 
   ![SortOption](fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg)
-
-- **Sorted** (according to apps Installation Time)
-
-  ![sortedApps](fastlane/metadata/android/en-US/images/phoneScreenshots/6.jpg)
-
-- **Refress Apps** (Pull down to refress)
-
-  ![refress](fastlane/metadata/android/en-US/images/phoneScreenshots/7.jpg)
 
 Demo :
 
