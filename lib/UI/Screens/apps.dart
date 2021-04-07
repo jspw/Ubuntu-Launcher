@@ -11,7 +11,7 @@ class Apps extends StatefulWidget {
     // TODO: implement createState
     // throw UnimplementedError();
     return AppsState(apps, sortType);
-  }
+  } 
 }
 
 class AppsState extends State {
