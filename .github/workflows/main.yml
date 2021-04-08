@@ -35,10 +35,6 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
-        
-            # Check for any formatting issues in the code.
-      - name: Check formatting issues
-        run: flutter format --set-exit-if-changed
 
       - name: Analyze project source
         run: flutter analyze
