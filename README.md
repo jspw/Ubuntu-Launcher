@@ -7,7 +7,7 @@ Ubuntu Launcher
 <a href="https://github.com/jspw/Ubuntu-Launcher/releases">
 <img src="https://img.shields.io/github/downloads/jspw/ubuntu-launcher/total" />
 </a>
-<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.1.0">
+<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.2.0">
 <img src="https://img.shields.io/github/v/release/jspw/ubuntu-launcher" />
 </a>
 <a href='https://github.com/jspw/Ubuntu-Launcher/issues'>
@@ -31,9 +31,9 @@ width="150" hspace="10" vspace="10">
 Though flutter is a cross platform UI framework, the launcher has android version only for now.Our launcher is only available on github. Any update and release version will be available here.
 
 <p align="center">
-<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.1.0">
+<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.2.0">
     <img alt="Get it on Google Play"
-        src="https://img.shields.io/github/downloads/jspw/ubuntu-launcher/2.1.0/total?label=Download%20Now&logo=ubuntu%20launcher&style=for-the-badge" />
+        src="https://img.shields.io/github/downloads/jspw/ubuntu-launcher/2.2.0/total?label=Download%20Now&logo=ubuntu%20launcher&style=for-the-badge" />
 </a>  
 </p>
 
@@ -48,6 +48,7 @@ At first, it was made for myself having simple look and customization. Then i de
 
 - Use as default launcher
 - Simple & Fast UI
+- Responsive
 - Clean homeScreen
 - Slide Bar
 - Shortcut Apps on SideBar
@@ -59,6 +60,7 @@ At first, it was made for myself having simple look and customization. Then i de
 #### Latest Features
 
 - In App drawer, **Press Long** on app to open App Setting
+- Responsive (Can use as lanscape mode)
 
 ## Requirements
 
@@ -68,7 +70,7 @@ At first, it was made for myself having simple look and customization. Then i de
 
 ## Install
 
-- Latest : [Ubuntu Launcher 2.1.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.1.0)
+- Latest : [Ubuntu Launcher 2.2.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.2.0)
 - Old Versions : [Releases](https://github.com/jspw/Ubuntu-Launcher/releases)
 
 Download the apk file and install in your android device.
@@ -79,28 +81,30 @@ Download the apk file and install in your android device.
 
 - **Loading Screen** (When app runs for the first time)
 
-  ![loading](fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg)
+  ![loading](assets/ss/loading.png)
 
 - **Home Screen** (Empty for simplicity)
 
-  ![Slidebar](fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg)
+  ![Home](assets/ss/home.png)
 
 - **Side Bar** (Shortcut Menu Options) -> Swap from Left to Righ to open
 
-  ![sidebar](fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg)
+  ![sidebar](assets/ss/sidebar.png)
+  ![vertical](assets/ss/vertical_view.png)
 
 - **App Drawer** (Installed accesible apps)
 
-  ![apps](fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpg)
+  ![apps](assets/ss/apps.png)
+  ![](assets/ss/apps_vertical_view.png)
 
 - **Sort Option** (Sort by Apps Name, Installation and Update time)
 
-  ![SortOption](fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg)
+  ![SortOption](assets/ss/sorts.png)
 
 ### Demo
 
 <p align='center'>
-<img   src='fastlane/metadata/android/en-US/images/phoneScreenshots/8.gif' />
+<img   src="./assets/ss/demo.gif" />
 </p>
 
 ## Permissions

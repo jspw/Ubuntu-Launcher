@@ -1,4 +1,4 @@
-import 'Utility/libraries.dart';
+import 'src/helpers/libraries.dart';
 
 void main() {
   runApp(MyApp());
