@@ -1,12 +1,11 @@
-import 'libraries.dart';
+import 'package:flutter/cupertino.dart';
 
 class RouteAnimator {
-  static Route createRoute(var apps, String sortType) {
+  static Route createRoute(Widget home) {
     {
       return PageRouteBuilder(
         opaque: false,
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            Apps(apps, sortType),
+        pageBuilder: (context, animation, secondaryAnimation) => home,
         transitionsBuilder: (context, a1, a2, widget) {
           return Transform.scale(
             scale: a1.value,

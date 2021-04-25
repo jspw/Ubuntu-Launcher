@@ -1,26 +1,8 @@
-import 'src/helpers/libraries.dart';
+import 'package:flutter/material.dart';
+import 'package:launcher/src/app.dart';
+import 'package:launcher/src/core/modules/apps/blocs/cubit/apps_cubit.dart';
+import 'package:launcher/src/resources/apps_api_provider.dart';
 
 void main() {
   runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.pink,
-        accentColor: Colors.white,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      darkTheme: ThemeData(
-        // New
-        brightness: Brightness.light, // New
-      ),
-      title: "Ubuntu Launcher",
-      initialRoute: Routes.initialScreen(),
-      routes: Routes.routes(),
-    );
-  }
 }
