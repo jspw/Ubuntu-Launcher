@@ -25,6 +25,7 @@ class Home extends StatelessWidget {
   bool autoOpenDrawer;
 
   // List<Application> shortcutApps = [];
+  //
 
   _launchCaller() async {
     const url = "tel:";
@@ -37,27 +38,32 @@ class Home extends StatelessWidget {
 
   void drawerApps() async {}
 
-  void getShortcutApps(apps) {
-    Application settings, camera, sms, phone;
+  void getShortcutApps(apps) async {
+    // Application settings, camera, sms, phone;
+    //
+    String settingsPackageNameDemo;
+    String messagesPackageNameDemo;
+    String cameraPackageNameDemo;
 
     for (int i = 0; i < apps.length; i++) {
       Application app = apps[i];
       if (app.appName == "Settings") {
-        // settingsPackageNameDemo = app.packageName;
-        settings = apps[i];
+        settingsPackageNameDemo = app.packageName;
+        // settings = apps[i];
       } else if (app.appName == "Camera") {
-        // cameraPackageNameDemo = app.packageName;
-        camera = apps[i];
+        cameraPackageNameDemo = app.packageName;
+        // camera = apps[i];
       } else if (app.appName == "Messages" || app.appName == "Messaging") {
-        // messagesPackageNameDemo = app.packageName;
-        sms = apps[i];
-      } else if (app.appName == "Phone" || app.appName == "Call") {
-        // messagesPackageNameDemo = app.packageName;
-        phone = apps[i];
+        messagesPackageNameDemo = app.packageName;
+        // sms = apps[i];
       }
+      //  else if (app.appName == "Phone" || app.appName == "Call") {
+      //   messagesPackageNameDemo = app.packageName;
+      //   // phone = apps[i];
+      // }
     }
 
-    List<Application> shortcutApps = [settings, camera, sms, phone];
+    // List<Application> shortcutApps = [settings, camera, sms, phone];
     // print("Testing cubit");
     // print(shortcutApps);
 
@@ -72,25 +78,30 @@ class Home extends StatelessWidget {
 //      "com.android.mms"
 //      "com.sonyericsson.conversations"
 
-    //check message app installed or  not
-    // if (await DeviceApps.isAppInstalled(messagesPackageNameDemo)) {
-    //   messagesPackageNameDemo = messagesPackageNameDemo;
-    // } else if (await DeviceApps.isAppInstalled(
-    //     "com.google.android.apps.messaging")) {
-    //   messagesPackageNameDemo = "com.google.android.apps.messaging";
-    // } else if (await DeviceApps.isAppInstalled("com.jb.gosms")) {
-    //   messagesPackageNameDemo = "com.jb.gosms";
-    // } else if (await DeviceApps.isAppInstalled(
-    //     "com.concentriclivers.mms.com.android.mms")) {
-    //   messagesPackageNameDemo = "com.concentriclivers.mms.com.android.mms";
-    // } else if (await DeviceApps.isAppInstalled("fr.slvn.mms")) {
-    //   messagesPackageNameDemo = "fr.slvn.mms";
-    // } else if (await DeviceApps.isAppInstalled("com.android.mms")) {
-    //   messagesPackageNameDemo = "com.android.mms";
-    // } else if (await DeviceApps.isAppInstalled(
-    //     "com.sonyericsson.conversations")) {
-    //   messagesPackageNameDemo = "com.sonyericsson.conversations";
-    // }
+    // check message app installed or  not
+    //
+    if (await DeviceApps.isAppInstalled(messagesPackageNameDemo)) {
+      messagesPackageNameDemo = messagesPackageNameDemo;
+    } else if (await DeviceApps.isAppInstalled(
+        "com.google.android.apps.messaging")) {
+      messagesPackageNameDemo = "com.google.android.apps.messaging";
+    } else if (await DeviceApps.isAppInstalled("com.jb.gosms")) {
+      messagesPackageNameDemo = "com.jb.gosms";
+    } else if (await DeviceApps.isAppInstalled(
+        "com.concentriclivers.mms.com.android.mms")) {
+      messagesPackageNameDemo = "com.concentriclivers.mms.com.android.mms";
+    } else if (await DeviceApps.isAppInstalled("fr.slvn.mms")) {
+      messagesPackageNameDemo = "fr.slvn.mms";
+    } else if (await DeviceApps.isAppInstalled("com.android.mms")) {
+      messagesPackageNameDemo = "com.android.mms";
+    } else if (await DeviceApps.isAppInstalled(
+        "com.sonyericsson.conversations")) {
+      messagesPackageNameDemo = "com.sonyericsson.conversations";
+    }
+
+    settingsPackageName = settingsPackageNameDemo;
+    cameraPackageName = cameraPackageNameDemo;
+    messagesPackageName = messagesPackageNameDemo;
   }
 
   // void navigateScreen(widget) async {
@@ -136,73 +147,74 @@ class Home extends StatelessWidget {
                 opacity: state is OpacityInitial ? 1 : .30,
                 child: SafeArea(
                     child: Container(
-                  color: Color.fromRGBO(39, 21, 40, 0.5),
-                  // Colors.pink.withOpacity(0.5),
-                  height: MediaQuery.of(context).size.height,
-                  width: 60.0,
-                  child: BlocBuilder<ShortcutAppsCubit, ShortcutAppsState>(
-                      builder: (context, state) {
-                    if (state is ShortcutAppsLoaded) {
-                      List<Application> shortcutApps = state.shortcutApps;
+                        color: Color.fromRGBO(39, 21, 40, 0.5),
+                        // Colors.pink.withOpacity(0.5),
+                        height: MediaQuery.of(context).size.height,
+                        width: 60.0,
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      opacityCubit.setOpacitySemi();
 
-                      print(shortcutApps.length);
-
-                      // List x =;
-
-                      return Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    opacityCubit.setOpacitySemi();
-
-                                    Navigator.pushNamed(
-                                        context, AppDrawer.route);
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    // width: 35,
-                                    child: ClipRRect(
-                                      child: Hero(
-                                        tag: 'drawer',
-                                        child: Image.asset(
-                                          "assets/images/drawer.png",
-                                          fit: BoxFit.cover,
+                                      Navigator.pushNamed(
+                                          context, AppDrawer.route);
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(10),
+                                      // width: 35,
+                                      child: ClipRRect(
+                                        child: Hero(
+                                          tag: 'drawer',
+                                          child: Image.asset(
+                                            "assets/images/drawer.png",
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: List.generate(
-                                shortcutApps.length,
-                                (index) {
-                                  Application shortcutApp = shortcutApps[index];
-                                  print("shortcutApp");
-                                  print(shortcutApp);
-                                  return shortcutApp is ApplicationWithIcon
-                                      ? shortcutAppsBuild(
-                                          shortcutApp.icon,
-                                          () => DeviceApps.openApp(
-                                              shortcutApp.packageName))
-                                      : null;
-                                },
+                                ],
                               ),
-                            ),
-                            Opacity(
-                              opacity: 0,
-                              child: IconButton(
-                                  onPressed: () {}, icon: Icon(Icons.menu)),
-                            ),
-                          ]);
-                    } else
-                      return Container();
-                  }),
-                )),
+                              Column(children: [
+                                shortcutAppsBuild(
+                                  Icon(
+                                    Icons.phone,
+                                    color: Colors.white,
+                                  ),
+                                  () => _launchCaller(),
+                                ),
+                                shortcutAppsBuild(
+                                  Icon(
+                                    Icons.sms_sharp,
+                                    color: Colors.white,
+                                  ),
+                                  () => DeviceApps.openApp(messagesPackageName),
+                                ),
+                                shortcutAppsBuild(
+                                  Icon(
+                                    Icons.flip_camera_ios,
+                                    color: Colors.white,
+                                  ),
+                                  () => DeviceApps.openApp(cameraPackageName),
+                                ),
+                                shortcutAppsBuild(
+                                  Icon(
+                                    Icons.settings,
+                                    color: Colors.white,
+                                  ),
+                                  () => DeviceApps.openApp(settingsPackageName),
+                                )
+                              ]),
+                              Opacity(
+                                opacity: 0,
+                                child: IconButton(
+                                    onPressed: () {}, icon: Icon(Icons.menu)),
+                              ),
+                            ]))),
               );
             },
           ),
@@ -220,6 +232,7 @@ class Home extends StatelessWidget {
               );
             else if (state is AppsLoaded) {
               apps = state.apps;
+              getShortcutApps(apps);
               return Container(
                 key: scaffoldKey,
                 decoration: BoxDecoration(
@@ -274,15 +287,9 @@ class Home extends StatelessWidget {
   }
 }
 
-Widget shortcutAppsBuild(Uint8List icon, Function fn) {
-  return GestureDetector(
-    onTap: fn,
-    child: Padding(
-      padding: const EdgeInsets.all(8),
-      child: Image.memory(
-        icon,
-        // color: Colors.transparent,
-      ),
-    ),
+Widget shortcutAppsBuild(Icon icon, Function fn) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 15.0),
+    child: IconButton(icon: icon, onPressed: fn),
   );
 }

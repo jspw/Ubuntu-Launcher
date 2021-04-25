@@ -7,7 +7,7 @@ Ubuntu Launcher
 <a href="https://github.com/jspw/Ubuntu-Launcher/releases">
 <img src="https://img.shields.io/github/downloads/jspw/ubuntu-launcher/total" />
 </a>
-<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.2.0">
+<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.0">
 <img src="https://img.shields.io/github/v/release/jspw/ubuntu-launcher" />
 </a>
 <a href='https://github.com/jspw/Ubuntu-Launcher/issues'>
@@ -31,9 +31,9 @@ width="150" hspace="10" vspace="10">
 Though flutter is a cross platform UI framework, the launcher has android version only for now.Our launcher is only available on github. Any update and release version will be available here.
 
 <p align="center">
-<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.2.0">
+<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.0">
     <img alt="Get it on Google Play"
-        src="https://img.shields.io/github/downloads/jspw/ubuntu-launcher/2.2.0/total?label=Download%20Now&logo=ubuntu%20launcher&style=for-the-badge" />
+        src="https://img.shields.io/github/downloads/jspw/ubuntu-launcher/2.3.0/total?label=Download%20Now&logo=ubuntu%20launcher&style=for-the-badge" />
 </a>  
 </p>
 
@@ -53,6 +53,7 @@ At first, it was made for myself having simple look and customization. Then i de
 - Slide Bar
 - Shortcut Apps on SideBar
 - Sort apps according to alphabetically, installation and update time
+- Apps Search bar
 - Animated navigation
 - View Apps' settings
 - Ad free
@@ -61,6 +62,7 @@ At first, it was made for myself having simple look and customization. Then i de
 
 - In App drawer, **Press Long** on app to open App Setting
 - Responsive (Can use as lanscape mode)
+- Search apps on app drawer using search bar
 
 ## Requirements
 
@@ -70,7 +72,7 @@ At first, it was made for myself having simple look and customization. Then i de
 
 ## Install
 
-- Latest : [Ubuntu Launcher 2.2.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.2.0)
+- Latest : [Ubuntu Launcher 2.3.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.0)
 - Old Versions : [Releases](https://github.com/jspw/Ubuntu-Launcher/releases)
 
 Download the apk file and install in your android device.
@@ -101,6 +103,8 @@ Download the apk file and install in your android device.
 
   ![SortOption](assets/ss/sorts.png)
 
+- **Search Bar**
+  ![Search Bar](assets/ss/searchbar.png)
 ### Demo
 
 <p align='center'>
