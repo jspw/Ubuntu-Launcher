@@ -3,7 +3,7 @@ import 'package:device_apps/device_apps.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:launcher/src/constants/enums.dart';
-import 'package:launcher/src/resources/apps_api_provider.dart';
+import 'package:launcher/src/core/modules/apps/resources/apps_api_provider.dart';
 import 'package:logger/logger.dart';
 
 part 'apps_state.dart';

@@ -5,7 +5,7 @@ import 'package:device_apps/device_apps.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:launcher/src/core/modules/apps/blocs/blocs.dart';
-import 'package:launcher/src/resources/apps_api_provider.dart';
+import 'package:launcher/src/core/modules/apps/resources/apps_api_provider.dart';
 
 part 'shortcut_apps_state.dart';
 
