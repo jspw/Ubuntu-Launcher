@@ -1,6 +1,3 @@
-import 'dart:ffi';
-import 'dart:typed_data';
-
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,8 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
 import 'package:launcher/src/core/modules/apps/blocs/blocs.dart';
 import 'package:launcher/src/core/modules/apps/views/app_drawer.dart';
-import 'package:launcher/src/core/modules/home/blocs/cubit/shortcut_apps_cubit.dart';
-import 'package:launcher/src/helpers/routeAnimatior.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatelessWidget {
@@ -137,7 +132,7 @@ class Home extends StatelessWidget {
         onFocusChange: (isFocusChanged) {
           if (isFocusChanged) {
             opacityCubit.opacityReset();
-            // appsCubit.getApps();
+            appsCubit.updateApps();
           }
         },
         child: Scaffold(
@@ -189,14 +184,14 @@ class Home extends StatelessWidget {
                                 ),
                                 shortcutAppsBuild(
                                   Icon(
-                                    Icons.sms_sharp,
+                                    Icons.sms,
                                     color: Colors.white,
                                   ),
                                   () => DeviceApps.openApp(messagesPackageName),
                                 ),
                                 shortcutAppsBuild(
                                   Icon(
-                                    Icons.flip_camera_ios,
+                                    Icons.camera,
                                     color: Colors.white,
                                   ),
                                   () => DeviceApps.openApp(cameraPackageName),
@@ -280,7 +275,8 @@ class Home extends StatelessWidget {
               );
             }
           }),
-          // drawerEnableOpenDragGesture: (apps == null) ? false : true,
+          // drawerEnableOpenDragGesture:
+          //     (appsCubit.state is AppsLoaded) ? true : false,
         ),
       ),
     );

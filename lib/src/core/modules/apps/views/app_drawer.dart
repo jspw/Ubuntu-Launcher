@@ -42,12 +42,19 @@ class AppDrawer extends StatelessWidget {
 
     final opacityCubit = BlocProvider.of<OpacityCubit>(context);
 
+    List<Application> apps = [];
+
+    if (appsCubit.state is AppsLoaded) {
+      apps = appsCubit.state.props[0];
+    }
+
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async => true,
       child: Focus(
         onFocusChange: (isFocusChanged) {
           if (isFocusChanged) {
             opacityCubit.setOpacitySemi();
+            appsCubit.updateApps();
           }
         },
         child: Scaffold(
@@ -127,56 +134,53 @@ class AppDrawer extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: BlocBuilder<AppsCubit, AppsState>(
                           builder: (context, state) {
-                            if (state is AppsLoaded) {
-                              final apps = state.apps;
+                            // if (state is AppsLoaded) {
 
-                              return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white30,
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: SimpleAutoCompleteTextField(
-                                    style: TextStyle(
-                                        letterSpacing: 1.2,
-                                        color: Colors.white,
-                                        fontSize: 24.0),
-                                    controller: _searchController,
-                                    key: _autoCompeleteTextFieldkey,
-                                    suggestions: appsName,
-                                    textSubmitted: (appName) {
-                                      for (int i = 0; i < apps.length; i++) {
-                                        if (apps[i].appName.toString() ==
-                                            appName) {
-                                          DeviceApps.openApp(
-                                              apps[i].packageName);
-                                          break;
-                                        }
+                            return Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                decoration: BoxDecoration(
+                                  color: Colors.white30,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: SimpleAutoCompleteTextField(
+                                  style: TextStyle(
+                                      letterSpacing: 1.2,
+                                      color: Colors.white,
+                                      fontSize: 24.0),
+                                  controller: _searchController,
+                                  key: _autoCompeleteTextFieldkey,
+                                  suggestions: appsName,
+                                  textSubmitted: (appName) {
+                                    for (int i = 0; i < apps.length; i++) {
+                                      if (apps[i].appName.toString() ==
+                                          appName) {
+                                        DeviceApps.openApp(apps[i].packageName);
+                                        break;
                                       }
-                                    },
-                                    clearOnSubmit: true,
-                                    keyboardType: TextInputType.text,
-                                    decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.all(10),
-                                      border: InputBorder.none,
-                                      suffixIcon: Icon(
-                                        Icons.search_sharp,
-                                        color: Colors.grey,
-                                      ),
-                                      fillColor: Colors.white,
-                                      focusColor: Colors.white,
-                                      hintStyle: TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          textBaseline: TextBaseline.alphabetic,
-                                          color: Colors.grey,
-                                          fontSize: 20.0),
-                                      hintText:
-                                          '   Type to search applications',
+                                    }
+                                  },
+                                  clearOnSubmit: true,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.all(10),
+                                    border: InputBorder.none,
+                                    suffixIcon: Icon(
+                                      Icons.search_sharp,
+                                      color: Colors.grey,
                                     ),
-                                  ));
-                            } else
-                              return RefreshProgressIndicator();
+                                    fillColor: Colors.white,
+                                    focusColor: Colors.white,
+                                    hintStyle: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        textBaseline: TextBaseline.alphabetic,
+                                        color: Colors.grey,
+                                        fontSize: 20.0),
+                                    hintText: '   Type to search applications',
+                                  ),
+                                ));
+                            // } else
+                            //   return RefreshProgressIndicator();
                           },
                         )),
                   ),
@@ -186,9 +190,11 @@ class AppDrawer extends StatelessWidget {
           ),
           body: RefreshIndicator(
             color: Colors.white,
-            onRefresh: () async => appsCubit.getApps,
+            onRefresh: () async {
+              appsCubit.updateApps();
+            },
             child: Container(
-              padding: const EdgeInsets.only(left: 30),
+              padding: const EdgeInsets.only(left: 50),
               child: BlocBuilder<AppsCubit, AppsState>(
                 builder: (context, state) {
                   if (state is AppsLoading) {
@@ -219,6 +225,8 @@ class AppDrawer extends StatelessWidget {
                             },
                             onLongPress: () async {
                               // showMyDialog(context);
+                              //
+                              Navigator.pop(context);
 
                               if (LocalPlatform().isAndroid) {
                                 final AndroidIntent intent = AndroidIntent(

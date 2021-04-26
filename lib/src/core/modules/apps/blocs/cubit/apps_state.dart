@@ -25,10 +25,12 @@ class AppsLoading extends AppsState {
 class AppsLoaded extends AppsState {
   final List<Application> apps;
 
-  AppsLoaded(this.apps);
+  final String sortType;
+
+  AppsLoaded({@required this.apps,@required this.sortType});
 
   @override
-  List<Object> get props => [apps];
+  List<Object> get props => [apps,sortType];
 }
 
 class AppsError extends AppsState {

@@ -22,10 +22,21 @@ class AppsCubit extends Cubit<AppsState> {
       List<Application> apps = await appsApiProvider.fetchAppList();
       apps.sort(
           (a, b) => a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
-      emit(AppsLoaded(apps));
+      emit(AppsLoaded(
+          apps: apps,
+          sortType: SortOptions.Alphabetically.toString().split('.').last));
     } catch (errorMessage) {
       Logger().v(errorMessage);
       emit(AppsError(errorMessage));
+    }
+  }
+
+  void updateApps() async {
+    if (state is AppsLoaded) {
+      String sortType = state.props[1];
+      List<Application> apps = await appsApiProvider.fetchAppList();
+      emit(AppsLoaded(apps: apps, sortType: sortType));
+      sortApps(sortType);
     }
   }
 
@@ -63,6 +74,6 @@ class AppsCubit extends Cubit<AppsState> {
 
     print(apps);
 
-    emit(AppsLoaded(apps));
+    emit(AppsLoaded(apps: apps, sortType: sortType));
   }
 }
