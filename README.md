@@ -7,7 +7,7 @@ Ubuntu Launcher
 <a href="https://github.com/jspw/Ubuntu-Launcher/releases">
 <img src="https://img.shields.io/github/downloads/jspw/ubuntu-launcher/total" />
 </a>
-<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.0">
+<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.1">
 <img src="https://img.shields.io/github/v/release/jspw/ubuntu-launcher" />
 </a>
 <a href='https://github.com/jspw/Ubuntu-Launcher/issues'>
@@ -31,9 +31,9 @@ width="150" hspace="10" vspace="10">
 Though flutter is a cross platform UI framework, the launcher has android version only for now.Our launcher is only available on github. Any update and release version will be available here.
 
 <p align="center">
-<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.0">
+<a href="https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.1">
     <img alt="Get it on Google Play"
-        src="https://img.shields.io/github/downloads/jspw/ubuntu-launcher/2.3.0/total?label=Download%20Now&logo=ubuntu%20launcher&style=for-the-badge" />
+        src="https://img.shields.io/github/downloads/jspw/ubuntu-launcher/2.3.1/total?label=Download%20Now&logo=ubuntu%20launcher&style=for-the-badge" />
 </a>  
 </p>
 
@@ -73,7 +73,7 @@ At first, it was made for myself having simple look and customization. Then i de
 
 ## Install
 
-- Latest : [Ubuntu Launcher 2.3.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.0) or [Google Drive](https://drive.google.com/drive/folders/1cj3CPFrVJXNjKmJYvWm6Wr4bBlWQRY3P?usp=sharing)
+- Latest : [Ubuntu Launcher 2.3.1](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.1) or [Google Drive](https://drive.google.com/drive/folders/1cj3CPFrVJXNjKmJYvWm6Wr4bBlWQRY3P?usp=sharing)
 - Old Versions : [Releases](https://github.com/jspw/Ubuntu-Launcher/releases)
 
 Download the apk file and install in your android device.
