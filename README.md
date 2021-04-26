@@ -46,13 +46,14 @@ At first, it was made for myself having simple look and customization. Then i de
 
 ## Features
 
-- Use as default launcher
+- Can Use as default launcher
 - Simple & Fast UI
 - Responsive
 - Clean homeScreen
 - Slide Bar
 - Shortcut Apps on SideBar
 - Sort apps according to alphabetically, installation and update time
+- Auto & Manual pull to update apps
 - Apps Search bar
 - Animated navigation
 - View Apps' settings
@@ -72,7 +73,7 @@ At first, it was made for myself having simple look and customization. Then i de
 
 ## Install
 
-- Latest : [Ubuntu Launcher 2.3.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.0) or  [Google Drive](https://drive.google.com/drive/folders/1cj3CPFrVJXNjKmJYvWm6Wr4bBlWQRY3P?usp=sharing)
+- Latest : [Ubuntu Launcher 2.3.0](https://github.com/jspw/Ubuntu-Launcher/releases/tag/2.3.0) or [Google Drive](https://drive.google.com/drive/folders/1cj3CPFrVJXNjKmJYvWm6Wr4bBlWQRY3P?usp=sharing)
 - Old Versions : [Releases](https://github.com/jspw/Ubuntu-Launcher/releases)
 
 Download the apk file and install in your android device.
@@ -104,7 +105,9 @@ Download the apk file and install in your android device.
   ![SortOption](assets/ss/sorts.png)
 
 - **Search Bar**
+
   ![Search Bar](assets/ss/searchbar.png)
+
 ### Demo
 
 <p align='center'>
