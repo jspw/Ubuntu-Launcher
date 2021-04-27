@@ -215,15 +215,17 @@ class Home extends StatelessWidget {
           ),
           body: BlocBuilder<AppsCubit, AppsState>(builder: (context, state) {
             if (state is AppsLoading)
-              return Container(
-                key: scaffoldKey,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                  image: AssetImage("assets/images/ubuntu-splash-screen.gif"),
-                  fit: BoxFit.cover,
-                )),
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
+              return SafeArea(
+                child: Container(
+                  key: scaffoldKey,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    image: AssetImage("assets/images/boot2.gif"),
+                    fit: BoxFit.fill,
+                  )),
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                ),
               );
             else if (state is AppsLoaded) {
               apps = state.apps;
@@ -276,7 +278,7 @@ class Home extends StatelessWidget {
             }
           }),
           // drawerEnableOpenDragGesture:
-          //     (appsCubit.state is AppsLoaded) ? true : false,
+          // (appsCubit.state is AppsLoaded) ? true : false,
         ),
       ),
     );

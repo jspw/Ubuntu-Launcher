@@ -22,9 +22,13 @@ class AppsCubit extends Cubit<AppsState> {
       List<Application> apps = await appsApiProvider.fetchAppList();
       apps.sort(
           (a, b) => a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
-      emit(AppsLoaded(
-          apps: apps,
-          sortType: SortOptions.Alphabetically.toString().split('.').last));
+
+      Future.delayed(Duration(seconds: 5), () {
+        // deleayed code here
+        emit(AppsLoaded(
+            apps: apps,
+            sortType: SortOptions.Alphabetically.toString().split('.').last));
+      });
     } catch (errorMessage) {
       Logger().v(errorMessage);
       emit(AppsError(errorMessage));
@@ -43,7 +47,7 @@ class AppsCubit extends Cubit<AppsState> {
   void listenApps() async {
     try {
       Stream<ApplicationEvent> apps = await DeviceApps.listenToAppsChanges();
-      print(apps);
+      // print(apps);
       getApps();
     } catch (errorMessage) {
       emit(AppsError(errorMessage));
@@ -60,19 +64,19 @@ class AppsCubit extends Cubit<AppsState> {
     emit(AppsLoading());
 
     if (sortType == SortOptions.Alphabetically.toString().split('.').last) {
-      print("Chaned $sortType");
+      // print("Chaned $sortType");
       apps.sort(
           (a, b) => a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
     } else if (sortType ==
         SortOptions.InstallationTime.toString().split('.').last) {
       apps.sort((b, a) => a.installTimeMillis.compareTo(b.installTimeMillis));
-      print("Chaned $sortType");
+      // print("Chaned $sortType");
     } else if (sortType == SortOptions.UpdateTime.toString().split('.').last) {
       apps.sort((b, a) => a.updateTimeMillis.compareTo(b.updateTimeMillis));
-      print("Chaned $sortType");
+      // print("Chaned $sortType");
     }
 
-    print(apps);
+    // print(apps);
 
     emit(AppsLoaded(apps: apps, sortType: sortType));
   }

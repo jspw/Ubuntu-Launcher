@@ -106,7 +106,7 @@ class AppDrawer extends StatelessWidget {
                             child: Text(""),
                           ),
                           onChanged: (sortType) {
-                            print(sortType);
+                            // print(sortType);
                             appsCubit.sortApps(sortType);
                           },
                           items: sortTypes
