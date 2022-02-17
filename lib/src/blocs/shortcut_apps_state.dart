@@ -10,11 +10,10 @@ abstract class ShortcutAppsState extends Equatable {
 class ShortcutAppsInitial extends ShortcutAppsState {}
 
 class ShortcutAppsLoaded extends ShortcutAppsState {
-  final List<Application> shortcutApps;
+  final ShortcutAppsModel shortcutAppsModel;
 
-  ShortcutAppsLoaded(this.shortcutApps);
+  ShortcutAppsLoaded(this.shortcutAppsModel);
 
-    @override
-  List<Object> get props => [shortcutApps];
-
+  @override
+  List<Object> get props => [shortcutAppsModel];
 }

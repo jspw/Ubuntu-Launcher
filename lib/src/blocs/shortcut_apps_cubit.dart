@@ -3,34 +3,27 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
-import 'package:launcher/src/core/modules/apps/blocs/blocs.dart';
-import 'package:launcher/src/core/modules/apps/resources/apps_api_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:launcher/src/blocs/apps_cubit.dart';
+import 'package:launcher/src/data/apps_api_provider.dart';
+import 'package:launcher/src/data/models/shortcut_app_model.dart';
+import 'package:logger/logger.dart';
 
 part 'shortcut_apps_state.dart';
 
 class ShortcutAppsCubit extends Cubit<ShortcutAppsState> {
-  // final AppsCubit appsCubit;
   final appsApiProvider = AppsApiProvider();
 
-  // StreamSubscription appsStreamSubscription;
+  final AppsCubit appsCubit;
 
-  ShortcutAppsCubit() : super(ShortcutAppsInitial()) {
-    // appsStreamSubscription = appsCubit.stream.listen((appsState) {
-    //   // print("inside cubit");
-    //   // print(appsState);
-    //   if (appsState is AppsLoaded) {
-    //     getShortcutApps(appsState.apps);
-    //   }
-    // });
-    getApps();
-  }
-
-  void getApps() async {
-    List<Application> apps = await appsApiProvider.fetchAppList();
-    apps.sort(
-        (a, b) => a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
-    getShortcutApps(apps);
+  ShortcutAppsCubit({@required this.appsCubit}) : super(ShortcutAppsInitial()) {
+    Logger().w(state);
+    appsCubit.stream.listen((appsState) {
+      if (appsState is AppsLoaded) {
+        getShortcutApps(appsState.apps);
+      }
+      Logger().w(appsState);
+    });
   }
 
   void getShortcutApps(apps) {
@@ -53,11 +46,12 @@ class ShortcutAppsCubit extends Cubit<ShortcutAppsState> {
       }
     }
 
-    List<Application> shortcutApps = [settings, camera, sms, phone];
+    // List<Application> shortcutApps = [settings, camera, sms, phone];
     // print("Testing cubit");
     // print(shortcutApps);
 
-    emit(ShortcutAppsLoaded(shortcutApps));
+    emit(ShortcutAppsLoaded(new ShortcutAppsModel(
+        phone: phone, camera: camera, setting: settings, message: sms)));
 
     //messaging apps packageNames in different android phones
 
@@ -93,8 +87,6 @@ class ShortcutAppsCubit extends Cubit<ShortcutAppsState> {
 
   @override
   Future<void> close() {
-    // TODO: implement close
-    // appsStreamSubscription.cancel();
     return super.close();
   }
 }

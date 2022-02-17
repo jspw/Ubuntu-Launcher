@@ -2,18 +2,19 @@ import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:launcher/src/blocs/apps_cubit.dart';
+import 'package:launcher/src/blocs/shortcut_apps_cubit.dart';
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
-import 'package:launcher/src/core/modules/apps/blocs/blocs.dart';
 import 'package:launcher/src/core/modules/apps/views/app_drawer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatelessWidget {
   static const route = '/';
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  List<Application> apps;
-  String settingsPackageName;
-  String cameraPackageName;
-  String messagesPackageName;
+  // List<Application> apps;
+  // String settingsPackageName;
+  // String cameraPackageName;
+  // String messagesPackageName;
 
   double sidebarOpacity = 1;
 
@@ -31,73 +32,73 @@ class Home extends StatelessWidget {
     }
   }
 
-  void drawerApps() async {}
+  // void drawerApps() async {}
 
-  void getShortcutApps(apps) async {
-    // Application settings, camera, sms, phone;
-    //
-    String settingsPackageNameDemo;
-    String messagesPackageNameDemo;
-    String cameraPackageNameDemo;
+//   void getShortcutApps(apps) async {
+//     // Application settings, camera, sms, phone;
+//     //
+//     String settingsPackageNameDemo;
+//     String messagesPackageNameDemo;
+//     String cameraPackageNameDemo;
 
-    for (int i = 0; i < apps.length; i++) {
-      Application app = apps[i];
-      if (app.appName == "Settings") {
-        settingsPackageNameDemo = app.packageName;
-        // settings = apps[i];
-      } else if (app.appName == "Camera") {
-        cameraPackageNameDemo = app.packageName;
-        // camera = apps[i];
-      } else if (app.appName == "Messages" || app.appName == "Messaging") {
-        messagesPackageNameDemo = app.packageName;
-        // sms = apps[i];
-      }
-      //  else if (app.appName == "Phone" || app.appName == "Call") {
-      //   messagesPackageNameDemo = app.packageName;
-      //   // phone = apps[i];
-      // }
-    }
+//     for (int i = 0; i < apps.length; i++) {
+//       Application app = apps[i];
+//       if (app.appName == "Settings") {
+//         settingsPackageNameDemo = app.packageName;
+//         // settings = apps[i];
+//       } else if (app.appName == "Camera") {
+//         cameraPackageNameDemo = app.packageName;
+//         // camera = apps[i];
+//       } else if (app.appName == "Messages" || app.appName == "Messaging") {
+//         messagesPackageNameDemo = app.packageName;
+//         // sms = apps[i];
+//       }
+//       //  else if (app.appName == "Phone" || app.appName == "Call") {
+//       //   messagesPackageNameDemo = app.packageName;
+//       //   // phone = apps[i];
+//       // }
+//     }
 
-    // List<Application> shortcutApps = [settings, camera, sms, phone];
-    // print("Testing cubit");
-    // print(shortcutApps);
+//     // List<Application> shortcutApps = [settings, camera, sms, phone];
+//     // print("Testing cubit");
+//     // print(shortcutApps);
 
-    // emit(ShortcutAppsLoaded(shortcutApps));
+//     // emit(ShortcutAppsLoaded(shortcutApps));
 
-    //messaging apps packageNames in different android phones
+//     //messaging apps packageNames in different android phones
 
-//      "com.google.android.apps.messaging"
-//      "com.jb.gosms"
-//      "com.concentriclivers.mms.com.android.mms"
-//      "fr.slvn.mms"
-//      "com.android.mms"
-//      "com.sonyericsson.conversations"
+// //      "com.google.android.apps.messaging"
+// //      "com.jb.gosms"
+// //      "com.concentriclivers.mms.com.android.mms"
+// //      "fr.slvn.mms"
+// //      "com.android.mms"
+// //      "com.sonyericsson.conversations"
 
-    // check message app installed or  not
-    //
-    if (await DeviceApps.isAppInstalled(messagesPackageNameDemo)) {
-      messagesPackageNameDemo = messagesPackageNameDemo;
-    } else if (await DeviceApps.isAppInstalled(
-        "com.google.android.apps.messaging")) {
-      messagesPackageNameDemo = "com.google.android.apps.messaging";
-    } else if (await DeviceApps.isAppInstalled("com.jb.gosms")) {
-      messagesPackageNameDemo = "com.jb.gosms";
-    } else if (await DeviceApps.isAppInstalled(
-        "com.concentriclivers.mms.com.android.mms")) {
-      messagesPackageNameDemo = "com.concentriclivers.mms.com.android.mms";
-    } else if (await DeviceApps.isAppInstalled("fr.slvn.mms")) {
-      messagesPackageNameDemo = "fr.slvn.mms";
-    } else if (await DeviceApps.isAppInstalled("com.android.mms")) {
-      messagesPackageNameDemo = "com.android.mms";
-    } else if (await DeviceApps.isAppInstalled(
-        "com.sonyericsson.conversations")) {
-      messagesPackageNameDemo = "com.sonyericsson.conversations";
-    }
+//     // check message app installed or  not
+//     //
+//     if (await DeviceApps.isAppInstalled(messagesPackageNameDemo)) {
+//       messagesPackageNameDemo = messagesPackageNameDemo;
+//     } else if (await DeviceApps.isAppInstalled(
+//         "com.google.android.apps.messaging")) {
+//       messagesPackageNameDemo = "com.google.android.apps.messaging";
+//     } else if (await DeviceApps.isAppInstalled("com.jb.gosms")) {
+//       messagesPackageNameDemo = "com.jb.gosms";
+//     } else if (await DeviceApps.isAppInstalled(
+//         "com.concentriclivers.mms.com.android.mms")) {
+//       messagesPackageNameDemo = "com.concentriclivers.mms.com.android.mms";
+//     } else if (await DeviceApps.isAppInstalled("fr.slvn.mms")) {
+//       messagesPackageNameDemo = "fr.slvn.mms";
+//     } else if (await DeviceApps.isAppInstalled("com.android.mms")) {
+//       messagesPackageNameDemo = "com.android.mms";
+//     } else if (await DeviceApps.isAppInstalled(
+//         "com.sonyericsson.conversations")) {
+//       messagesPackageNameDemo = "com.sonyericsson.conversations";
+//     }
 
-    settingsPackageName = settingsPackageNameDemo;
-    cameraPackageName = cameraPackageNameDemo;
-    messagesPackageName = messagesPackageNameDemo;
-  }
+//     settingsPackageName = settingsPackageNameDemo;
+//     cameraPackageName = cameraPackageNameDemo;
+//     messagesPackageName = messagesPackageNameDemo;
+//   }
 
   // void navigateScreen(widget) async {
   //   setState(() {
@@ -154,7 +155,6 @@ class Home extends StatelessWidget {
                                   GestureDetector(
                                     onTap: () {
                                       opacityCubit.setOpacitySemi();
-
                                       Navigator.pushNamed(
                                           context, AppDrawer.route);
                                     },
@@ -174,36 +174,52 @@ class Home extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              Column(children: [
-                                shortcutAppsBuild(
-                                  Icon(
-                                    Icons.phone,
-                                    color: Colors.white,
-                                  ),
-                                  () => _launchCaller(),
-                                ),
-                                shortcutAppsBuild(
-                                  Icon(
-                                    Icons.sms,
-                                    color: Colors.white,
-                                  ),
-                                  () => DeviceApps.openApp(messagesPackageName),
-                                ),
-                                shortcutAppsBuild(
-                                  Icon(
-                                    Icons.camera,
-                                    color: Colors.white,
-                                  ),
-                                  () => DeviceApps.openApp(cameraPackageName),
-                                ),
-                                shortcutAppsBuild(
-                                  Icon(
-                                    Icons.settings,
-                                    color: Colors.white,
-                                  ),
-                                  () => DeviceApps.openApp(settingsPackageName),
-                                )
-                              ]),
+                              BlocBuilder<ShortcutAppsCubit, ShortcutAppsState>(
+                                builder: (context, state) {
+                                  if (state is ShortcutAppsLoaded) {
+                                    return Column(children: [
+                                      shortcutAppsBuild(
+                                        Icon(
+                                          Icons.phone,
+                                          color: Colors.white,
+                                        ),
+                                        () => _launchCaller(),
+                                      ),
+                                      shortcutAppsBuild(
+                                        Icon(
+                                          Icons.sms,
+                                          color: Colors.white,
+                                        ),
+                                        () => DeviceApps.openApp(state
+                                            .shortcutAppsModel
+                                            .message
+                                            .packageName),
+                                      ),
+                                      shortcutAppsBuild(
+                                        Icon(
+                                          Icons.camera,
+                                          color: Colors.white,
+                                        ),
+                                        () => DeviceApps.openApp(state
+                                            .shortcutAppsModel
+                                            .camera
+                                            .packageName),
+                                      ),
+                                      shortcutAppsBuild(
+                                        Icon(
+                                          Icons.settings,
+                                          color: Colors.white,
+                                        ),
+                                        () => DeviceApps.openApp(state
+                                            .shortcutAppsModel
+                                            .setting
+                                            .packageName),
+                                      )
+                                    ]);
+                                  } else
+                                    return Container();
+                                },
+                              ),
                               Opacity(
                                 opacity: 0,
                                 child: IconButton(
@@ -228,8 +244,6 @@ class Home extends StatelessWidget {
                 ),
               );
             else if (state is AppsLoaded) {
-              apps = state.apps;
-              getShortcutApps(apps);
               return Container(
                 key: scaffoldKey,
                 decoration: BoxDecoration(

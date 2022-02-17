@@ -1,14 +1,13 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:device_apps/device_apps.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:launcher/src/config/constants/size.dart';
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
-import 'package:launcher/src/ui/uninstaller_dialouge.dart';
 import 'package:platform/platform.dart';
-import 'package:launcher/src/constants/enums.dart';
-import 'package:launcher/src/core/modules/apps/blocs/cubit/apps_cubit.dart';
+import 'package:launcher/src/config/constants/enums.dart';
+import 'package:launcher/src/blocs/apps_cubit.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -35,9 +34,6 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deviceHeight = MediaQuery.of(context).size.height;
-    final deviceWidth = MediaQuery.of(context).size.width;
-
     final appsCubit = BlocProvider.of<AppsCubit>(context);
 
     final opacityCubit = BlocProvider.of<OpacityCubit>(context);
