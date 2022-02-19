@@ -3,22 +3,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:launcher/src/blocs/apps_cubit.dart';
 import 'package:launcher/src/config/routes/app_routes.dart';
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
+import 'package:launcher/src/data/apps_api_provider.dart';
 
-import 'package:launcher/src/blocs/shortcut_apps_cubit.dart';
 import './config/routes/app_routes.dart';
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final AppsCubit appsCubit = new AppsCubit();
     return MultiBlocProvider(
         providers: [
-          BlocProvider<AppsCubit>(create: (BuildContext context) => appsCubit),
-          BlocProvider<OpacityCubit>(
-              create: (BuildContext context) => OpacityCubit()),
-          BlocProvider<ShortcutAppsCubit>(
-              create: (BuildContext context) =>
-                  ShortcutAppsCubit(appsCubit: appsCubit)),
+          BlocProvider(
+            create: (context) =>
+                AppsCubit(appsApiProvider: AppsApiProvider())..getApps(),
+          ),
+          BlocProvider<OpacityCubit>(create: (context) => OpacityCubit()),
         ],
         child: MaterialApp(
           showPerformanceOverlay: false,

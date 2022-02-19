@@ -25,9 +25,14 @@ class AppsLoading extends AppsState {
 class AppsLoaded extends AppsState {
   final List<Application> apps;
 
+  final ShortcutAppsModel shortcutAppsModel;
+
   final String sortType;
 
-  AppsLoaded({@required this.apps, @required this.sortType});
+  AppsLoaded(
+      {@required this.apps,
+      @required this.sortType,
+      @required this.shortcutAppsModel});
 
   @override
   List<Object> get props => [apps, sortType];

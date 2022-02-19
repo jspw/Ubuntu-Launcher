@@ -4,17 +4,14 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:launcher/src/config/constants/enums.dart';
 import 'package:launcher/src/data/apps_api_provider.dart';
+import 'package:launcher/src/data/models/shortcut_app_model.dart';
 import 'package:logger/logger.dart';
 
 part 'apps_state.dart';
 
 class AppsCubit extends Cubit<AppsState> {
-  AppsCubit() : super(AppsInitiateState()) {
-    getApps();
-    // listenApps();
-  }
-
-  final appsApiProvider = AppsApiProvider();
+  final AppsApiProvider appsApiProvider;
+  AppsCubit({@required this.appsApiProvider}) : super(AppsInitiateState());
 
   void getApps() async {
     emit(AppsLoading());
@@ -23,23 +20,45 @@ class AppsCubit extends Cubit<AppsState> {
       apps.sort(
           (a, b) => a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
 
-      Future.delayed(Duration(seconds: 5), () {
-        // deleayed code here
-        emit(AppsLoaded(
-            apps: apps,
-            sortType: SortOptions.Alphabetically.toString().split('.').last));
-      });
+      final ShortcutAppsModel shortcutApps = getShortcutApps(apps);
+
+      emit(AppsLoaded(
+          shortcutAppsModel: shortcutApps,
+          apps: apps,
+          sortType: SortOptions.Alphabetically.toString().split('.').last));
     } catch (errorMessage) {
       Logger().v(errorMessage);
       emit(AppsError(errorMessage));
     }
   }
 
+  ShortcutAppsModel getShortcutApps(apps) {
+    Application settings, camera, sms, phone;
+
+    for (int i = 0; i < apps.length; i++) {
+      Application app = apps[i];
+      if (app.appName == "Settings") {
+        settings = apps[i];
+      } else if (app.appName == "Camera") {
+        camera = apps[i];
+      } else if (app.appName == "Messages" || app.appName == "Messaging") {
+        sms = apps[i];
+      } else if (app.appName == "Phone" || app.appName == "Call") {
+        phone = apps[i];
+      }
+    }
+
+    return new ShortcutAppsModel(
+        phone: phone, camera: camera, setting: settings, message: sms);
+  }
+
   void updateApps() async {
     if (state is AppsLoaded) {
       String sortType = state.props[1];
       List<Application> apps = await appsApiProvider.fetchAppList();
-      emit(AppsLoaded(apps: apps, sortType: sortType));
+      final ShortcutAppsModel shortcutApps = getShortcutApps(apps);
+      emit(AppsLoaded(
+          shortcutAppsModel: shortcutApps, apps: apps, sortType: sortType));
       sortApps(sortType);
     }
   }
@@ -64,20 +83,18 @@ class AppsCubit extends Cubit<AppsState> {
     emit(AppsLoading());
 
     if (sortType == SortOptions.Alphabetically.toString().split('.').last) {
-      // print("Chaned $sortType");
       apps.sort(
           (a, b) => a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
     } else if (sortType ==
         SortOptions.InstallationTime.toString().split('.').last) {
       apps.sort((b, a) => a.installTimeMillis.compareTo(b.installTimeMillis));
-      // print("Chaned $sortType");
     } else if (sortType == SortOptions.UpdateTime.toString().split('.').last) {
       apps.sort((b, a) => a.updateTimeMillis.compareTo(b.updateTimeMillis));
-      // print("Chaned $sortType");
     }
 
-    // print(apps);
+    final ShortcutAppsModel shortcutApps = getShortcutApps(apps);
 
-    emit(AppsLoaded(apps: apps, sortType: sortType));
+    emit(AppsLoaded(
+        apps: apps, sortType: sortType, shortcutAppsModel: shortcutApps));
   }
 }
