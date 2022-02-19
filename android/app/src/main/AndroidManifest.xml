@@ -8,8 +8,9 @@
 	-->
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<!-- allows startup after boot -->
-	 <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" /> <!-- to list "external" applications for Android 11 >= -->
-	<application android:name="io.flutter.app.FlutterApplication" android:label="Ubuntu Launcher" android:icon="@mipmap/ic_launcher">
+	<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+	<!-- to list "external" applications for Android 11 >= -->
+	<application android:label="Ubuntu Launcher" android:icon="@mipmap/ic_launcher">
 		<activity android:name=".MainActivity" android:launchMode="singleTop" android:theme="@style/LaunchTheme" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:windowSoftInputMode="adjustResize">
 			<!--
 			Specifies an Android theme to apply to this Activity as soon as
@@ -25,7 +26,6 @@
 			gap between the end of Android's launch screen and the painting of
 			Flutter's first frame.
 			-->
-			<meta-data android:name="io.flutter.embedding.android.SplashScreenDrawable" android:resource="@drawable/launch_background" />
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
