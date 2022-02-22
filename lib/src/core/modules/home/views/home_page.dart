@@ -212,8 +212,8 @@ class Home extends StatelessWidget {
                               BlocBuilder<AppsCubit, AppsState>(
                                 builder: (context, state) {
                                   if (state is AppsLoaded) {
-                                    Logger()
-                                        .w(state.shortcutAppsModel.toJson());
+                                    // Logger()
+                                    //     .w(state.shortcutAppsModel.toJson());
                                     return Column(children: [
                                       shortcutAppsBuild(
                                           Icons.phone,

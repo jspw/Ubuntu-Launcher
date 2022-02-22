@@ -12,7 +12,9 @@ part 'apps_state.dart';
 
 class AppsCubit extends Cubit<AppsState> {
   final AppsApiProvider appsApiProvider;
-  AppsCubit({@required this.appsApiProvider}) : super(AppsInitiateState());
+  AppsCubit({@required this.appsApiProvider}) : super(AppsInitiateState()) {
+    listenApps();
+  }
 
   void getApps() async {
     emit(AppsLoading());
@@ -40,7 +42,7 @@ class AppsCubit extends Cubit<AppsState> {
       final isNewUser = await LocalStorage.isUserNew();
       if (!isNewUser) {
         final shortcutApps = await LocalStorage.getShortcutApps();
-        Logger().w(shortcutApps.toJson());
+        // Logger().w(shortcutApps.toJson());
 
         return shortcutApps;
       } else {
@@ -114,22 +116,51 @@ class AppsCubit extends Cubit<AppsState> {
 
   void listenApps() async {
     try {
-      Stream<ApplicationEvent> apps = await DeviceApps.listenToAppsChanges();
-      // print(apps);
-      getApps();
+      Stream<ApplicationEvent> appsEvent = DeviceApps.listenToAppsChanges();
+
+      appsEvent.listen((event) {
+        if (state is AppsLoaded) {
+          final appsState = state as AppsLoaded;
+          final apps = appsState.apps;
+          Logger().w(apps.length);
+          Logger().v(event);
+
+          if (event.event == ApplicationEventType.disabled) {
+            final applicationEventType = event as ApplicationEventDisabled;
+            // TODO : may be there is a bug, adding is not visible in the app drawer!
+            apps.add(applicationEventType.application);
+          } else if (event.event == ApplicationEventType.enabled) {
+            apps.removeWhere(
+                (element) => element.packageName == event.packageName);
+          } else if (event.event == ApplicationEventType.uninstalled) {
+            final applicationEventType = event as ApplicationEventUninstalled;
+            // TODO : Need to test this shit!
+            apps.removeWhere((element) =>
+                element.packageName == applicationEventType.packageName);
+          } else if (event.event == ApplicationEventType.installed) {
+            final applicationEventType = event as ApplicationEventInstalled;
+            // TODO : Need to test this shit!
+            apps.add(applicationEventType.application);
+          }
+          emit(AppsLoading());
+          emit(AppsLoaded(
+              apps: apps,
+              sortType: appsState.sortType,
+              shortcutAppsModel: appsState.shortcutAppsModel));
+        }
+      });
+
+      // getApps();
+
     } catch (errorMessage) {
-      emit(AppsError(errorMessage));
+      Logger().w(errorMessage);
+      emit(AppsError(errorMessage.toString()));
     }
   }
 
   void sortApps(String sortType) async {
-    List<Application> apps = [];
-
-    if (state is AppsLoaded) {
-      apps = state.props[0];
-    }
-
-    emit(AppsLoading());
+    final appsState = state as AppsLoaded;
+    List<Application> apps = appsState.apps;
 
     if (sortType == SortOptions.Alphabetically.toString().split('.').last) {
       apps.sort(
@@ -141,9 +172,9 @@ class AppsCubit extends Cubit<AppsState> {
       apps.sort((b, a) => a.updateTimeMillis.compareTo(b.updateTimeMillis));
     }
 
-    final ShortcutAppsModel shortcutApps = await getShortcutApps(apps);
-
     emit(AppsLoaded(
-        apps: apps, sortType: sortType, shortcutAppsModel: shortcutApps));
+        apps: apps,
+        sortType: sortType,
+        shortcutAppsModel: appsState.shortcutAppsModel));
   }
 }

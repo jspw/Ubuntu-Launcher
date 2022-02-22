@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:launcher/src/config/constants/size.dart';
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
+import 'package:launcher/src/helpers/widgets/error_message.dart';
+import 'package:logger/logger.dart';
 import 'package:platform/platform.dart';
 import 'package:launcher/src/config/constants/enums.dart';
 import 'package:launcher/src/blocs/apps_cubit.dart';
@@ -223,15 +225,22 @@ class AppDrawer extends StatelessWidget {
                             onLongPress: () async {
                               // showMyDialog(context);
                               //
-                              Navigator.pop(context);
+                              // Navigator.pop(context);
 
-                              if (LocalPlatform().isAndroid) {
-                                final AndroidIntent intent = AndroidIntent(
-                                  action: 'action_application_details_settings',
-                                  data: 'package:' +
-                                      app.packageName, // replace com.example.app with your applicationId
-                                );
-                                await intent.launch();
+                              try {
+                                if (LocalPlatform().isAndroid) {
+                                  final AndroidIntent intent = AndroidIntent(
+                                    action:
+                                        'action_application_details_settings',
+                                    data: 'package:' +
+                                        app.packageName, // replace com.example.app with your applicationId
+                                  );
+                                  await intent.launch();
+                                }
+                              } catch (error) {
+                                Logger().w(error);
+                                ErrorMessage(context: context, error: error)
+                                    .display();
                               }
                             },
                             child: app is ApplicationWithIcon
