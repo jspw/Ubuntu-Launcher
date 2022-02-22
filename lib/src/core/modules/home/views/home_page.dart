@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:launcher/src/blocs/apps_cubit.dart';
+import 'package:launcher/src/config/constants/colors.dart';
+import 'package:launcher/src/config/constants/enums.dart';
+import 'package:launcher/src/config/constants/size.dart';
 
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
 import 'package:launcher/src/core/modules/apps/views/app_drawer.dart';
+import 'package:launcher/src/data/models/shortcut_app_model.dart';
+import 'package:launcher/src/helpers/widgets/success_message.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,20 +22,136 @@ class Home extends StatelessWidget {
 
   bool autoOpenDrawer;
 
-  _launchCaller() async {
-    const url = "tel:";
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
+  // _launchCaller() async {
+  //   const url = "tel:";
+  //   if (await canLaunch(url)) {
+  //     await launch(url);
+  //   } else {
+  //     throw 'Could not launch $url';
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     final appsCubit = BlocProvider.of<AppsCubit>(context);
 
     final opacityCubit = BlocProvider.of<OpacityCubit>(context);
+
+    Future<void> _showAppSelectDialog(ShortcutAppTypes appTypes) async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: true, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Select ${appTypes.name} App',
+                  style:
+                      TextStyle(fontSize: normalTextSize, color: defaultColor),
+                ),
+                IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(
+                      Icons.close,
+                      size: iconSize,
+                      color: dangerColor,
+                    ))
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: BlocBuilder<AppsCubit, AppsState>(
+                builder: (context, state) {
+                  if (state is AppsLoaded)
+                    return ListView(
+                      physics: ScrollPhysics(),
+                      shrinkWrap: true,
+                      children: <Widget>[
+                        for (final app in state.apps)
+                          ListTile(
+                            title: Text(app.appName),
+                            leading: app is ApplicationWithIcon
+                                ? CircleAvatar(
+                                    backgroundImage: MemoryImage(
+                                      app.icon,
+                                    ),
+                                    backgroundColor: Colors.white,
+                                  )
+                                : Icon(Icons.apps),
+                            onTap: () async {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                              final ShortcutAppsModel shortcutApps =
+                                  state.shortcutAppsModel;
+
+                              switch (appTypes) {
+                                case ShortcutAppTypes.CAMERA:
+                                  shortcutApps.camera = app.packageName;
+                                  break;
+                                case ShortcutAppTypes.MESSAGE:
+                                  shortcutApps.message = app.packageName;
+                                  break;
+                                case ShortcutAppTypes.PHONE:
+                                  shortcutApps.phone = app.packageName;
+                                  break;
+                                case ShortcutAppTypes.SETTINGS:
+                                  shortcutApps.setting = app.packageName;
+                                  break;
+
+                                default:
+                                  break;
+                              }
+
+                              BlocProvider.of<AppsCubit>(context)
+                                  .changeShortcutApps(shortcutApps);
+
+                              SuccessMessage(
+                                message:
+                                    '${appTypes.name} application selected successfully.',
+                                context: context,
+                              ).display();
+
+                              Logger().w(app.toString());
+                            },
+                          ),
+                      ],
+                    );
+                  else
+                    return Container(
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    );
+                },
+              ),
+            ),
+          );
+        },
+      );
+    }
+
+    Widget shortcutAppsBuild(
+        IconData icon, String application, ShortcutAppTypes appType) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 15.0),
+        child: IconButton(
+            icon: Icon(
+              icon,
+              size: iconSize,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              if (application == null) {
+                _showAppSelectDialog(appType);
+              } else
+                try {
+                  DeviceApps.openApp(application);
+                } catch (error) {
+                  Logger().w(error);
+                }
+            }),
+      );
+    }
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -45,7 +166,7 @@ class Home extends StatelessWidget {
         onFocusChange: (isFocusChanged) {
           if (isFocusChanged) {
             opacityCubit.opacityReset();
-            appsCubit.updateApps();
+            // appsCubit.updateApps();
           }
         },
         child: Scaffold(
@@ -89,44 +210,25 @@ class Home extends StatelessWidget {
                               BlocBuilder<AppsCubit, AppsState>(
                                 builder: (context, state) {
                                   if (state is AppsLoaded) {
+                                    Logger()
+                                        .w(state.shortcutAppsModel.toJson());
                                     return Column(children: [
                                       shortcutAppsBuild(
-                                        Icon(
                                           Icons.phone,
-                                          color: Colors.white,
-                                        ),
-                                        () => _launchCaller(),
-                                      ),
+                                          state.shortcutAppsModel.phone,
+                                          ShortcutAppTypes.PHONE),
                                       shortcutAppsBuild(
-                                        Icon(
                                           Icons.sms,
-                                          color: Colors.white,
-                                        ),
-                                        () => DeviceApps.openApp(state
-                                            .shortcutAppsModel
-                                            .message
-                                            .packageName),
-                                      ),
+                                          state.shortcutAppsModel.message,
+                                          ShortcutAppTypes.MESSAGE),
                                       shortcutAppsBuild(
-                                        Icon(
                                           Icons.camera,
-                                          color: Colors.white,
-                                        ),
-                                        () => DeviceApps.openApp(state
-                                            .shortcutAppsModel
-                                            .camera
-                                            .packageName),
-                                      ),
+                                          state.shortcutAppsModel.camera,
+                                          ShortcutAppTypes.CAMERA),
                                       shortcutAppsBuild(
-                                        Icon(
                                           Icons.settings,
-                                          color: Colors.white,
-                                        ),
-                                        () => DeviceApps.openApp(state
-                                            .shortcutAppsModel
-                                            .setting
-                                            .packageName),
-                                      )
+                                          state.shortcutAppsModel.setting,
+                                          ShortcutAppTypes.SETTINGS)
                                     ]);
                                   } else
                                     return Container();
@@ -142,7 +244,6 @@ class Home extends StatelessWidget {
             },
           ),
           body: BlocBuilder<AppsCubit, AppsState>(builder: (context, state) {
-            Logger().w(state);
             if (state is AppsLoading)
               return SafeArea(
                 child: Container(
@@ -210,11 +311,4 @@ class Home extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget shortcutAppsBuild(Icon icon, Function fn) {
-  return Padding(
-    padding: const EdgeInsets.only(top: 15.0),
-    child: IconButton(icon: icon, onPressed: fn),
-  );
 }

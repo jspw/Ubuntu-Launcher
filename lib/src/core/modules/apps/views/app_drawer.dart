@@ -41,7 +41,8 @@ class AppDrawer extends StatelessWidget {
     List<Application> apps = [];
 
     if (appsCubit.state is AppsLoaded) {
-      apps = appsCubit.state.props[0];
+      final state = appsCubit.state as AppsLoaded;
+      apps = state.apps;
     }
 
     return WillPopScope(
@@ -50,7 +51,7 @@ class AppDrawer extends StatelessWidget {
         onFocusChange: (isFocusChanged) {
           if (isFocusChanged) {
             opacityCubit.setOpacitySemi();
-            appsCubit.updateApps();
+            // appsCubit.updateApps();
           }
         },
         child: Scaffold(
@@ -187,7 +188,7 @@ class AppDrawer extends StatelessWidget {
           body: RefreshIndicator(
             color: Colors.white,
             onRefresh: () async {
-              appsCubit.updateApps();
+              // appsCubit.updateApps();
             },
             child: Container(
               padding: const EdgeInsets.only(left: 50),

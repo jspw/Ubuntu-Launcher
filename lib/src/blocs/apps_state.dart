@@ -35,7 +35,7 @@ class AppsLoaded extends AppsState {
       @required this.shortcutAppsModel});
 
   @override
-  List<Object> get props => [apps, sortType];
+  List<Object> get props => [shortcutAppsModel, apps, sortType];
 }
 
 class AppsError extends AppsState {
