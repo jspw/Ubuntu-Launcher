@@ -132,24 +132,26 @@ class Home extends StatelessWidget {
 
     Widget shortcutAppsBuild(
         IconData icon, String application, ShortcutAppTypes appType) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 15.0),
-        child: IconButton(
-            icon: Icon(
-              icon,
-              size: iconSize,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              if (application == null) {
-                _showAppSelectDialog(appType);
-              } else
-                try {
-                  DeviceApps.openApp(application);
-                } catch (error) {
-                  Logger().w(error);
-                }
-            }),
+      return GestureDetector(
+        onTap: () {
+          if (application == null) {
+            _showAppSelectDialog(appType);
+          } else
+            try {
+              DeviceApps.openApp(application);
+            } catch (error) {
+              Logger().w(error);
+            }
+        },
+        onLongPress: () => _showAppSelectDialog(appType),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 30.0),
+          child: Icon(
+            icon,
+            size: iconSize,
+            color: Colors.white,
+          ),
+        ),
       );
     }
 
