@@ -5,7 +5,7 @@ class AppsApiProvider {
     List<Application> apps = await DeviceApps.getInstalledApplications(
         includeAppIcons: true,
         includeSystemApps: true,
-        onlyAppsWithLaunchIntent: true);
+        onlyAppsWithLaunchIntent: false);
 
     return apps;
   }

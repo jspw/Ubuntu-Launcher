@@ -10,6 +10,7 @@ import 'package:launcher/src/config/constants/size.dart';
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
 import 'package:launcher/src/core/modules/apps/views/app_drawer.dart';
 import 'package:launcher/src/data/models/shortcut_app_model.dart';
+import 'package:launcher/src/helpers/widgets/error_message.dart';
 import 'package:launcher/src/helpers/widgets/success_message.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -41,87 +42,113 @@ class Home extends StatelessWidget {
       return showDialog<void>(
         context: context,
         barrierDismissible: true, // user must tap button!
+
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Select ${appTypes.name} App',
-                  style:
-                      TextStyle(fontSize: normalTextSize, color: defaultColor),
-                ),
-                IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(
-                      Icons.close,
-                      size: iconSize,
-                      color: dangerColor,
-                    ))
-              ],
+            // scrollable: true,
+            backgroundColor: Colors.transparent,
+            title: Text(
+              'Select ${appTypes.name} App',
+              overflow: TextOverflow.ellipsis,
+              style:
+                  TextStyle(fontSize: normalTextSize, color: Colors.pinkAccent),
             ),
-            content: SingleChildScrollView(
-              child: BlocBuilder<AppsCubit, AppsState>(
-                builder: (context, state) {
-                  if (state is AppsLoaded)
-                    return ListView(
-                      physics: ScrollPhysics(),
-                      shrinkWrap: true,
-                      children: <Widget>[
-                        for (final app in state.apps)
-                          ListTile(
-                            title: Text(app.appName),
-                            leading: app is ApplicationWithIcon
-                                ? CircleAvatar(
-                                    backgroundImage: MemoryImage(
-                                      app.icon,
+            content: BlocBuilder<AppsCubit, AppsState>(
+              builder: (context, state) {
+                if (state is AppsLoaded)
+                  return Card(
+                    color: Colors.transparent,
+                    child: Container(
+                      height: deviceHeight / 2,
+                      width: deviceWidth,
+                      child: ListView(
+                        physics: ScrollPhysics(),
+                        shrinkWrap: true,
+                        children: <Widget>[
+                          for (final app in state.apps)
+                            GestureDetector(
+                              onTap: () async {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                                final ShortcutAppsModel shortcutApps =
+                                    state.shortcutAppsModel;
+
+                                switch (appTypes) {
+                                  case ShortcutAppTypes.CAMERA:
+                                    shortcutApps.camera = app.packageName;
+                                    break;
+                                  case ShortcutAppTypes.MESSAGE:
+                                    shortcutApps.message = app.packageName;
+                                    break;
+                                  case ShortcutAppTypes.PHONE:
+                                    shortcutApps.phone = app.packageName;
+                                    break;
+                                  case ShortcutAppTypes.SETTINGS:
+                                    shortcutApps.setting = app.packageName;
+                                    break;
+
+                                  default:
+                                    break;
+                                }
+
+                                BlocProvider.of<AppsCubit>(context)
+                                    .updateShortcutApps(shortcutApps);
+
+                                SuccessMessage(
+                                  message:
+                                      '${appTypes.name} application selected successfully.',
+                                  context: context,
+                                ).display();
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.all(5),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        app is ApplicationWithIcon
+                                            ? CircleAvatar(
+                                                backgroundImage: MemoryImage(
+                                                  app.icon,
+                                                ),
+                                                backgroundColor: Colors.white,
+                                              )
+                                            : Icon(
+                                                Icons.apps,
+                                                size: iconSize,
+                                              ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: Text(
+                                              app.appName,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: normalTextSize),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    backgroundColor: Colors.white,
-                                  )
-                                : Icon(Icons.apps),
-                            onTap: () async {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pop();
-                              final ShortcutAppsModel shortcutApps =
-                                  state.shortcutAppsModel;
-
-                              switch (appTypes) {
-                                case ShortcutAppTypes.CAMERA:
-                                  shortcutApps.camera = app.packageName;
-                                  break;
-                                case ShortcutAppTypes.MESSAGE:
-                                  shortcutApps.message = app.packageName;
-                                  break;
-                                case ShortcutAppTypes.PHONE:
-                                  shortcutApps.phone = app.packageName;
-                                  break;
-                                case ShortcutAppTypes.SETTINGS:
-                                  shortcutApps.setting = app.packageName;
-                                  break;
-
-                                default:
-                                  break;
-                              }
-
-                              BlocProvider.of<AppsCubit>(context)
-                                  .updateShortcutApps(shortcutApps);
-
-                              SuccessMessage(
-                                message:
-                                    '${appTypes.name} application selected successfully.',
-                                context: context,
-                              ).display();
-                            },
-                          ),
-                      ],
-                    );
-                  else
-                    return Container(
-                      alignment: Alignment.center,
-                      child: CircularProgressIndicator(),
-                    );
-                },
-              ),
+                                    // Divider()
+                                  ],
+                                ),
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
+                  );
+                else
+                  return Container(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  );
+              },
             ),
           );
         },
@@ -134,12 +161,14 @@ class Home extends StatelessWidget {
         onTap: () {
           if (application == null) {
             _showAppSelectDialog(appType);
-          } else
+          } else {
             try {
               DeviceApps.openApp(application);
             } catch (error) {
               Logger().w(error);
+              ErrorMessage(context: context, error: error.toString()).display();
             }
+          }
         },
         onLongPress: () => _showAppSelectDialog(appType),
         child: Padding(

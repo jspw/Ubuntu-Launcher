@@ -21,6 +21,7 @@ class AppsCubit extends Cubit<AppsState> {
 
     try {
       List<Application> apps = await appsApiProvider.fetchAppList();
+      Logger().w(apps.length);
       String sortType = await LocalStorage.getSortType() ??
           getCurrentPayloads(
               appsStatePayloadTypes: AppsStatePayloadTypes.SORT_TYPE) ??

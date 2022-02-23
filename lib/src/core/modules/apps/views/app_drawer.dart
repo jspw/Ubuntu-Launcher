@@ -200,7 +200,15 @@ class AppDrawer extends StatelessWidget {
                         Application app = state.apps[i];
                         return GestureDetector(
                             onTap: () {
-                              DeviceApps.openApp(app.packageName);
+                              try {
+                                DeviceApps.openApp(app.packageName);
+                              } catch (error) {
+                                Logger().w(error);
+                                ErrorMessage(
+                                        context: context,
+                                        error: error.toString())
+                                    .display();
+                              }
                               Navigator.pop(context);
                             },
                             onLongPress: () async {
