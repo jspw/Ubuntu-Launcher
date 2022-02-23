@@ -104,15 +104,13 @@ class Home extends StatelessWidget {
                               }
 
                               BlocProvider.of<AppsCubit>(context)
-                                  .changeShortcutApps(shortcutApps);
+                                  .updateShortcutApps(shortcutApps);
 
                               SuccessMessage(
                                 message:
                                     '${appTypes.name} application selected successfully.',
                                 context: context,
                               ).display();
-
-                              Logger().w(app.toString());
                             },
                           ),
                       ],
@@ -168,7 +166,7 @@ class Home extends StatelessWidget {
         onFocusChange: (isFocusChanged) {
           if (isFocusChanged) {
             opacityCubit.opacityReset();
-            // appsCubit.updateApps();
+            appsCubit.loadApps();
           }
         },
         child: Scaffold(
@@ -212,8 +210,6 @@ class Home extends StatelessWidget {
                               BlocBuilder<AppsCubit, AppsState>(
                                 builder: (context, state) {
                                   if (state is AppsLoaded) {
-                                    // Logger()
-                                    //     .w(state.shortcutAppsModel.toJson());
                                     return Column(children: [
                                       shortcutAppsBuild(
                                           Icons.phone,

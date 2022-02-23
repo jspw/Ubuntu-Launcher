@@ -17,35 +17,16 @@ class AppDrawer extends StatelessWidget {
   TextEditingController _searchController;
   GlobalKey<AutoCompleteTextFieldState<String>> _autoCompeleteTextFieldkey =
       new GlobalKey();
-  List<String> appsName = [];
   List<String> sortTypes = [
-    SortOptions.Alphabetically.toString().split('.').last,
-    SortOptions.InstallationTime.toString().split('.').last,
-    SortOptions.UpdateTime.toString().split('.').last,
+    SortTypes.Alphabetically.toString().split('.').last,
+    SortTypes.InstallationTime.toString().split('.').last,
+    SortTypes.UpdateTime.toString().split('.').last,
   ];
-
-  appInfo(apps) async {
-    List<String> appsNameDemo = [];
-
-    for (int i = 0; i < apps.length; i++) {
-      appsNameDemo.add(apps[i].appName.toString());
-    }
-
-    appsName = appsNameDemo;
-  }
 
   @override
   Widget build(BuildContext context) {
     final appsCubit = BlocProvider.of<AppsCubit>(context);
-
     final opacityCubit = BlocProvider.of<OpacityCubit>(context);
-
-    List<Application> apps = [];
-
-    if (appsCubit.state is AppsLoaded) {
-      final state = appsCubit.state as AppsLoaded;
-      apps = state.apps;
-    }
 
     return WillPopScope(
       onWillPop: () async => true,
@@ -53,7 +34,7 @@ class AppDrawer extends StatelessWidget {
         onFocusChange: (isFocusChanged) {
           if (isFocusChanged) {
             opacityCubit.setOpacitySemi();
-            // appsCubit.updateApps();
+            appsCubit.loadApps();
           }
         },
         child: Scaffold(
@@ -62,7 +43,6 @@ class AppDrawer extends StatelessWidget {
             preferredSize: Size.fromHeight(100.0),
             child: SafeArea(
               child: Column(
-                // mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(
@@ -74,9 +54,7 @@ class AppDrawer extends StatelessWidget {
                         GestureDetector(
                           onTap: () {
                             // opacityCubit.opacityReset();
-                            Navigator.pop(
-                              context,
-                            );
+                            Navigator.pop(context);
                           },
                           child: Container(
                             padding: const EdgeInsets.all(5),
@@ -98,15 +76,14 @@ class AppDrawer extends StatelessWidget {
                           iconSize: 40,
                           elevation: 16,
 
-                          // focusColor: Colors.green,
+                          focusColor: Colors.green,
                           style: TextStyle(color: Colors.black),
                           underline: Container(
                             color: Colors.transparent,
                             child: Text(""),
                           ),
                           onChanged: (sortType) {
-                            // print(sortType);
-                            appsCubit.sortApps(sortType);
+                            appsCubit.updateSortType(sortType);
                           },
                           items: sortTypes
                               .map<DropdownMenuItem<String>>((String value) {
@@ -132,54 +109,61 @@ class AppDrawer extends StatelessWidget {
                     child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: BlocBuilder<AppsCubit, AppsState>(
-                          builder: (context, state) {
-                            // if (state is AppsLoaded) {
-
-                            return Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                decoration: BoxDecoration(
-                                  color: Colors.white30,
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: SimpleAutoCompleteTextField(
-                                  style: TextStyle(
-                                      letterSpacing: 1.2,
-                                      color: Colors.white,
-                                      fontSize: 24.0),
-                                  controller: _searchController,
-                                  key: _autoCompeleteTextFieldkey,
-                                  suggestions: appsName,
-                                  textSubmitted: (appName) {
-                                    for (int i = 0; i < apps.length; i++) {
-                                      if (apps[i].appName.toString() ==
-                                          appName) {
-                                        DeviceApps.openApp(apps[i].packageName);
-                                        break;
-                                      }
-                                    }
-                                  },
-                                  clearOnSubmit: true,
-                                  keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.all(10),
-                                    border: InputBorder.none,
-                                    suffixIcon: Icon(
-                                      Icons.search_sharp,
-                                      color: Colors.grey,
-                                    ),
-                                    fillColor: Colors.white,
-                                    focusColor: Colors.white,
-                                    hintStyle: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        textBaseline: TextBaseline.alphabetic,
-                                        color: Colors.grey,
-                                        fontSize: 20.0),
-                                    hintText: '   Type to search applications',
+                          builder: (context, appState) {
+                            if (appState is AppsLoaded) {
+                              return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white30,
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
-                                ));
-                            // } else
-                            //   return RefreshProgressIndicator();
+                                  child: SimpleAutoCompleteTextField(
+                                    suggestionsAmount: appState.apps.length,
+                                    style: TextStyle(
+                                        letterSpacing: 1.2,
+                                        color: Colors.white,
+                                        fontSize: normalTextSize),
+                                    controller: _searchController,
+                                    key: _autoCompeleteTextFieldkey,
+                                    suggestions: appState.apps
+                                        .map((app) => app.appName)
+                                        .toList(),
+                                    textSubmitted: (appName) {
+                                      for (int i = 0;
+                                          i < appState.apps.length;
+                                          i++) {
+                                        if (appState.apps[i].appName
+                                                .toString() ==
+                                            appName) {
+                                          DeviceApps.openApp(
+                                              appState.apps[i].packageName);
+                                          break;
+                                        }
+                                      }
+                                    },
+                                    clearOnSubmit: true,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.all(10),
+                                      border: InputBorder.none,
+                                      suffixIcon: Icon(
+                                        Icons.search_sharp,
+                                        color: Colors.grey,
+                                      ),
+                                      fillColor: Colors.white,
+                                      focusColor: Colors.white,
+                                      hintStyle: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          textBaseline: TextBaseline.alphabetic,
+                                          color: Colors.grey,
+                                          fontSize: smallTextSize),
+                                      hintText:
+                                          '   Type to search applications',
+                                    ),
+                                  ));
+                            } else
+                              return Container();
                           },
                         )),
                   ),
@@ -190,7 +174,7 @@ class AppDrawer extends StatelessWidget {
           body: RefreshIndicator(
             color: Colors.white,
             onRefresh: () async {
-              // appsCubit.updateApps();
+              appsCubit.loadApps();
             },
             child: Container(
               padding: const EdgeInsets.only(left: 50),
@@ -209,25 +193,19 @@ class AppDrawer extends StatelessWidget {
                       ),
                     );
                   } else if (state is AppsLoaded) {
-                    final apps = state.apps;
-                    appInfo(apps);
                     return StaggeredGridView.countBuilder(
                       crossAxisCount: ((4 * deviceWidth) / 432).round(),
-                      itemCount: apps.length,
+                      itemCount: state.apps.length,
                       itemBuilder: (BuildContext context, int i) {
-                        Application app = apps[i];
+                        Application app = state.apps[i];
                         return GestureDetector(
                             onTap: () {
                               DeviceApps.openApp(app.packageName);
                               Navigator.pop(context);
-                              // opacityCubit.opacityReset();
                             },
                             onLongPress: () async {
-                              // showMyDialog(context);
-                              //
-                              // Navigator.pop(context);
-
                               try {
+                                Navigator.pop(context);
                                 if (LocalPlatform().isAndroid) {
                                   final AndroidIntent intent = AndroidIntent(
                                     action:
@@ -243,40 +221,46 @@ class AppDrawer extends StatelessWidget {
                                     .display();
                               }
                             },
-                            child: app is ApplicationWithIcon
-                                ? GridTile(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: <Widget>[
-                                          Container(
+                            child: GridTile(
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    app is ApplicationWithIcon
+                                        ? Container(
                                             child: CircleAvatar(
                                               backgroundImage: MemoryImage(
                                                 app.icon,
                                               ),
                                               backgroundColor: Colors.white,
                                             ),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text(
-                                            app.appName,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
+                                          )
+                                        : Container(
+                                            child: CircleAvatar(
+                                              backgroundImage: AssetImage(
+                                                  "assets/images/no_image.png"),
+                                              backgroundColor: Colors.white,
                                             ),
-                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                        ],
-                                      ),
+                                    SizedBox(
+                                      height: 5,
                                     ),
-                                  )
-                                : null);
+                                    Text(
+                                      app.appName,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.clip,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ));
                       },
                       staggeredTileBuilder: (int index) =>
                           new StaggeredTile.count(1, 1),

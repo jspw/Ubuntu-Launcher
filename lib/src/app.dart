@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) =>
-                AppsCubit(appsApiProvider: AppsApiProvider())..getApps(),
+                AppsCubit(appsApiProvider: AppsApiProvider())..loadApps(),
           ),
           BlocProvider<OpacityCubit>(create: (context) => OpacityCubit()),
         ],

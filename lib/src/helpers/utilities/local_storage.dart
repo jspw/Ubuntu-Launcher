@@ -1,9 +1,6 @@
-import 'dart:convert';
-
-import 'package:device_apps/device_apps.dart';
 import 'package:launcher/src/config/constants/enums.dart';
 import 'package:launcher/src/data/models/shortcut_app_model.dart';
-import 'package:logger/logger.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
@@ -33,6 +30,16 @@ class LocalStorage {
   static Future<bool> isUserNew() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool("isNew") ?? true;
+  }
+
+  static Future<void> setSortType(String sortType) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('sortType', sortType);
+  }
+
+  static Future<String> getSortType() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('sortType');
   }
 
   static Future<void> clearAll() async {
