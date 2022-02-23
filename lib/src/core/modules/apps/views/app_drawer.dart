@@ -248,14 +248,16 @@ class AppDrawer extends StatelessWidget {
                                     SizedBox(
                                       height: 5,
                                     ),
-                                    Text(
-                                      app.appName,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
+                                    Expanded(
+                                      child: Text(
+                                        app.appName,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.clip,
                                       ),
-                                      overflow: TextOverflow.clip,
                                     ),
                                   ],
                                 ),
