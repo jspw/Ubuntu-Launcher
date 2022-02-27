@@ -173,9 +173,7 @@ class AppDrawer extends StatelessWidget {
           ),
           body: RefreshIndicator(
             color: Colors.white,
-            onRefresh: () async {
-              appsCubit.loadApps();
-            },
+            onRefresh: () => appsCubit.loadApps(),
             child: Container(
               padding: const EdgeInsets.only(left: 50),
               child: BlocBuilder<AppsCubit, AppsState>(
