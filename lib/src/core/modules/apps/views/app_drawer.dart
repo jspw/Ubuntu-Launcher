@@ -23,10 +23,14 @@ class AppDrawer extends StatelessWidget {
     SortTypes.UpdateTime.toString().split('.').last,
   ];
 
+  final ratio = 1.1 * 411.42857142857144 / deviceWidth;
+
   @override
   Widget build(BuildContext context) {
     final appsCubit = BlocProvider.of<AppsCubit>(context);
     final opacityCubit = BlocProvider.of<OpacityCubit>(context);
+
+    Logger().w(1.1 * 411.42857142857144 / deviceWidth);
 
     return WillPopScope(
       onWillPop: () async => true,
@@ -259,10 +263,12 @@ class AppDrawer extends StatelessWidget {
                                         app.appName,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        overflow: TextOverflow.clip,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: smallTextSize),
+                                        overflow: ratio < 1.2
+                                            ? TextOverflow.clip
+                                            : TextOverflow.ellipsis,
                                       ),
                                     ),
                                   ],
@@ -271,7 +277,7 @@ class AppDrawer extends StatelessWidget {
                             ));
                       },
                       staggeredTileBuilder: (int index) =>
-                          new StaggeredTile.count(1, 1),
+                          new StaggeredTile.count(1, ratio < 1.2 ? ratio : 1.1),
                     );
                   } else
                     return Center(
