@@ -21,7 +21,6 @@ class AppsCubit extends Cubit<AppsState> {
 
     try {
       List<Application> apps = await appsApiProvider.fetchAppList();
-      Logger().w(apps.length);
       String sortType = await LocalStorage.getSortType() ??
           getCurrentPayloads(
               appsStatePayloadTypes: AppsStatePayloadTypes.SORT_TYPE) ??
@@ -103,7 +102,8 @@ class AppsCubit extends Cubit<AppsState> {
               app.appName.toLowerCase().contains("messenger")) {
             sms = apps[i].packageName;
           } else if (app.appName.toLowerCase().contains("phone") ||
-              app.appName.toLowerCase().contains("call")) {
+              app.appName.toLowerCase().contains("call") ||
+              app.appName.toLowerCase().contains("dial")) {
             phone = apps[i].packageName;
           }
         }
@@ -154,16 +154,19 @@ class AppsCubit extends Cubit<AppsState> {
     try {
       Stream<ApplicationEvent> appsEvent = DeviceApps.listenToAppsChanges();
 
-      appsEvent.listen((event) {
+      appsEvent.listen((event) async {
         if (state is AppsLoaded) {
           final appState = state as AppsLoaded;
           final apps = appState.apps;
 
+          Logger().wtf(event);
+
           if (event.event == ApplicationEventType.disabled) {
             final applicationEventType = event as ApplicationEventDisabled;
-            // TODO : may be there is a bug, adding is not visible in the app drawer!
-            apps.add(applicationEventType.application);
-            loadApps();
+            Application app =
+                await DeviceApps.getApp(applicationEventType.packageName);
+            apps.add(app);
+            // loadApps();
             Logger()
                 .w("${applicationEventType.application.appName} is enabled");
           } else if (event.event == ApplicationEventType.enabled) {
@@ -172,16 +175,15 @@ class AppsCubit extends Cubit<AppsState> {
             Logger().w("${event.packageName} is disabled");
           } else if (event.event == ApplicationEventType.uninstalled) {
             final applicationEventType = event as ApplicationEventUninstalled;
-            // TODO : Need to test this shit!
+
             apps.removeWhere((element) =>
                 element.packageName == applicationEventType.packageName);
             Logger().w("${applicationEventType.packageName} is uninstalled");
           } else if (event.event == ApplicationEventType.installed) {
             final applicationEventType = event as ApplicationEventInstalled;
-            // TODO : Need to test this shit!
-            Application app = applicationEventType.application;
+            Application app =
+                await DeviceApps.getApp(applicationEventType.packageName);
             apps.add(app);
-            loadApps();
 
             Logger().w("${applicationEventType.application} is installed");
           }

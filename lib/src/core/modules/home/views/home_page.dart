@@ -158,12 +158,14 @@ class Home extends StatelessWidget {
     Widget shortcutAppsBuild(
         IconData icon, String application, ShortcutAppTypes appType) {
       return GestureDetector(
-        onTap: () {
+        onTap: () async {
           if (application == null) {
             _showAppSelectDialog(appType);
           } else {
             try {
-              DeviceApps.openApp(application);
+              var isLaunchAble = await DeviceApps.openApp(application);
+              Logger().w(isLaunchAble);
+              if (!isLaunchAble) _showAppSelectDialog(appType);
             } catch (error) {
               Logger().w(error);
               ErrorMessage(context: context, error: error.toString()).display();

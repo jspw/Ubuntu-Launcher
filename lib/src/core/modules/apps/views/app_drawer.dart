@@ -1,4 +1,3 @@
-import 'package:android_intent/android_intent.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +6,6 @@ import 'package:launcher/src/config/constants/size.dart';
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
 import 'package:launcher/src/helpers/widgets/error_message.dart';
 import 'package:logger/logger.dart';
-import 'package:platform/platform.dart';
 import 'package:launcher/src/config/constants/enums.dart';
 import 'package:launcher/src/blocs/apps_cubit.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
@@ -29,8 +27,6 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final appsCubit = BlocProvider.of<AppsCubit>(context);
     final opacityCubit = BlocProvider.of<OpacityCubit>(context);
-
-    Logger().w(1.1 * 411.42857142857144 / deviceWidth);
 
     return WillPopScope(
       onWillPop: () async => true,
@@ -216,15 +212,16 @@ class AppDrawer extends StatelessWidget {
                             onLongPress: () async {
                               try {
                                 Navigator.pop(context);
-                                if (LocalPlatform().isAndroid) {
-                                  final AndroidIntent intent = AndroidIntent(
-                                    action:
-                                        'action_application_details_settings',
-                                    data: 'package:' +
-                                        app.packageName, // replace com.example.app with your applicationId
-                                  );
-                                  await intent.launch();
-                                }
+                                // if (LocalPlatform().isAndroid) {
+                                //   final AndroidIntent intent = AndroidIntent(
+                                //     action:
+                                //         'action_application_details_settings',
+                                //     data: 'package:' +
+                                //         app.packageName, // replace com.example.app with your applicationId
+                                //   );
+                                //   await intent.launch();
+                                // }
+                                DeviceApps.openAppSettings(app.packageName);
                               } catch (error) {
                                 Logger().w(error);
                                 ErrorMessage(context: context, error: error)
@@ -277,7 +274,7 @@ class AppDrawer extends StatelessWidget {
                             ));
                       },
                       staggeredTileBuilder: (int index) =>
-                          new StaggeredTile.count(1, ratio < 1.2 ? ratio : 1.1),
+                          new StaggeredTile.count(1, ratio < 1.2 ? ratio : 1.0),
                     );
                   } else
                     return Center(
