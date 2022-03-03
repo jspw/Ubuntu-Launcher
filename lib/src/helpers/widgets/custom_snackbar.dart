@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:launcher/src/config/constants/size.dart';
+import 'package:logger/logger.dart';
 
 class CustomSnackBar {
   final BuildContext context;
@@ -7,13 +8,15 @@ class CustomSnackBar {
   final int days;
   final int seconds;
   final Color color;
+  final Function fn;
   final GlobalKey<ScaffoldState> key;
 
   CustomSnackBar({
     @required this.context,
     @required this.message,
-    this.seconds: 2,
-    this.days: 0,
+    this.seconds,
+    this.fn,
+    this.days,
     this.color,
     this.key,
   });
@@ -24,28 +27,31 @@ class CustomSnackBar {
       behavior: SnackBarBehavior.floating,
       duration: Duration(days: days, seconds: seconds),
       backgroundColor: color,
-      content: Container(
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.error,
-              color: Colors.white,
-            ),
-            SizedBox(
-              width: 20,
-            ),
-            Expanded(
-              child: Text(
-                message,
-                overflow: TextOverflow.visible,
-                style: TextStyle(fontSize: smallTextSize),
+      content: GestureDetector(
+        onTap: fn,
+        child: Container(
+          margin: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.error,
+                color: Colors.white,
               ),
-            )
-          ],
+              SizedBox(
+                width: 20,
+              ),
+              Expanded(
+                child: Text(
+                  message,
+                  overflow: TextOverflow.visible,
+                  style: TextStyle(fontSize: smallTextSize),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

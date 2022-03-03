@@ -8,13 +8,15 @@ class ErrorMessage extends CustomSnackBar {
   final int days;
   final int seconds;
   final GlobalKey<ScaffoldState> key;
+  final Function fn;
 
 // create constructor for ErrorMessage class
   ErrorMessage({
     @required this.context,
     @required this.error,
-    this.days,
-    this.seconds,
+    this.fn,
+    this.days: 0,
+    this.seconds: 2,
     this.key,
   }) : super(
             context: context,

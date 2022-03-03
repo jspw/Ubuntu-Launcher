@@ -166,7 +166,7 @@ class AppsCubit extends Cubit<AppsState> {
             Application app =
                 await DeviceApps.getApp(applicationEventType.packageName);
             apps.add(app);
-            // loadApps();
+            loadApps();
             Logger()
                 .w("${applicationEventType.application.appName} is enabled");
           } else if (event.event == ApplicationEventType.enabled) {
@@ -184,6 +184,7 @@ class AppsCubit extends Cubit<AppsState> {
             Application app =
                 await DeviceApps.getApp(applicationEventType.packageName);
             apps.add(app);
+            loadApps();
 
             Logger().w("${applicationEventType.application} is installed");
           }

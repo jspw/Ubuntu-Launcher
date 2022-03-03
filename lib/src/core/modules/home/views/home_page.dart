@@ -163,12 +163,26 @@ class Home extends StatelessWidget {
             _showAppSelectDialog(appType);
           } else {
             try {
-              var isLaunchAble = await DeviceApps.openApp(application);
+              bool isLaunchAble = await DeviceApps.openApp(application);
               Logger().w(isLaunchAble);
-              if (!isLaunchAble) _showAppSelectDialog(appType);
+              if (!isLaunchAble) {
+                // _showAppSelectDialog(appType);
+                Navigator.pop(context);
+                // DeviceApps.openAppSettings(application);
+                ErrorMessage(
+                        context: context,
+                        fn: () => DeviceApps.openAppSettings(application),
+                        seconds: 4,
+                        error:
+                            "Please tap here to enable the application first or long press on the app icon to change application.")
+                    .display();
+              }
             } catch (error) {
               Logger().w(error);
-              ErrorMessage(context: context, error: error.toString()).display();
+              ErrorMessage(
+                      context: context,
+                      error: "Something went wrong, Please try again.")
+                  .display();
             }
           }
         },
