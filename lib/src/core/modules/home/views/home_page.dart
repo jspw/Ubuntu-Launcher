@@ -1,26 +1,57 @@
+import 'dart:io';
+
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:launcher/src/blocs/apps_cubit.dart';
+import 'package:launcher/src/config/constants/colors.dart';
+import 'package:launcher/src/config/constants/enums.dart';
+import 'package:launcher/src/config/constants/size.dart';
+
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
-import 'package:launcher/src/core/modules/apps/blocs/blocs.dart';
 import 'package:launcher/src/core/modules/apps/views/app_drawer.dart';
+import 'package:launcher/src/data/models/shortcut_app_model.dart';
+import 'package:launcher/src/helpers/utilities/image_picker.dart';
+import 'package:launcher/src/helpers/utilities/local_storage.dart';
+import 'package:launcher/src/helpers/widgets/custom_snackbar.dart';
+import 'package:launcher/src/helpers/widgets/error_message.dart';
+import 'package:launcher/src/helpers/widgets/success_message.dart';
+import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   static const route = '/';
-  var scaffoldKey = GlobalKey<ScaffoldState>();
-  List<Application> apps;
-  String settingsPackageName;
-  String cameraPackageName;
-  String messagesPackageName;
+  @override
+  State<StatefulWidget> createState() {
+    return HomeState();
+  }
+}
+
+class HomeState extends State {
+  GlobalKey scaffoldKey = GlobalKey<ScaffoldState>();
 
   double sidebarOpacity = 1;
 
+  String defaultWallpaper = "assets/images/wallpaper.jpg";
+
+  String starterIcon = "assets/images/drawer.png";
+
   bool autoOpenDrawer;
 
-  // List<Application> shortcutApps = [];
-  //
+  String currentWallpaper;
+
+  Future<void> loadWallpaper() async {
+    currentWallpaper = await LocalStorage.getWallpaper();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    loadWallpaper();
+    super.initState();
+  }
 
   _launchCaller() async {
     const url = "tel:";
@@ -31,93 +62,178 @@ class Home extends StatelessWidget {
     }
   }
 
-  void drawerApps() async {}
-
-  void getShortcutApps(apps) async {
-    // Application settings, camera, sms, phone;
-    //
-    String settingsPackageNameDemo;
-    String messagesPackageNameDemo;
-    String cameraPackageNameDemo;
-
-    for (int i = 0; i < apps.length; i++) {
-      Application app = apps[i];
-      if (app.appName == "Settings") {
-        settingsPackageNameDemo = app.packageName;
-        // settings = apps[i];
-      } else if (app.appName == "Camera") {
-        cameraPackageNameDemo = app.packageName;
-        // camera = apps[i];
-      } else if (app.appName == "Messages" || app.appName == "Messaging") {
-        messagesPackageNameDemo = app.packageName;
-        // sms = apps[i];
-      }
-      //  else if (app.appName == "Phone" || app.appName == "Call") {
-      //   messagesPackageNameDemo = app.packageName;
-      //   // phone = apps[i];
-      // }
-    }
-
-    // List<Application> shortcutApps = [settings, camera, sms, phone];
-    // print("Testing cubit");
-    // print(shortcutApps);
-
-    // emit(ShortcutAppsLoaded(shortcutApps));
-
-    //messaging apps packageNames in different android phones
-
-//      "com.google.android.apps.messaging"
-//      "com.jb.gosms"
-//      "com.concentriclivers.mms.com.android.mms"
-//      "fr.slvn.mms"
-//      "com.android.mms"
-//      "com.sonyericsson.conversations"
-
-    // check message app installed or  not
-    //
-    if (await DeviceApps.isAppInstalled(messagesPackageNameDemo)) {
-      messagesPackageNameDemo = messagesPackageNameDemo;
-    } else if (await DeviceApps.isAppInstalled(
-        "com.google.android.apps.messaging")) {
-      messagesPackageNameDemo = "com.google.android.apps.messaging";
-    } else if (await DeviceApps.isAppInstalled("com.jb.gosms")) {
-      messagesPackageNameDemo = "com.jb.gosms";
-    } else if (await DeviceApps.isAppInstalled(
-        "com.concentriclivers.mms.com.android.mms")) {
-      messagesPackageNameDemo = "com.concentriclivers.mms.com.android.mms";
-    } else if (await DeviceApps.isAppInstalled("fr.slvn.mms")) {
-      messagesPackageNameDemo = "fr.slvn.mms";
-    } else if (await DeviceApps.isAppInstalled("com.android.mms")) {
-      messagesPackageNameDemo = "com.android.mms";
-    } else if (await DeviceApps.isAppInstalled(
-        "com.sonyericsson.conversations")) {
-      messagesPackageNameDemo = "com.sonyericsson.conversations";
-    }
-
-    settingsPackageName = settingsPackageNameDemo;
-    cameraPackageName = cameraPackageNameDemo;
-    messagesPackageName = messagesPackageNameDemo;
-  }
-
-  // void navigateScreen(widget) async {
-  //   setState(() {
-  //     sidebarOpacity = 0.30;
-  //   });
-  //   var app =
-  //       await Navigator.of(context).push(RouteAnimator.createRoute(widget));
-  //   setState(() {
-  //     apps = app[0];
-
-  //     sidebarOpacity = 1;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // print(apps);
     final appsCubit = BlocProvider.of<AppsCubit>(context);
 
     final opacityCubit = BlocProvider.of<OpacityCubit>(context);
+
+    Future<void> _showAppSelectDialog(ShortcutAppTypes appTypes) async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: true, // user must tap button!
+
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // scrollable: true,
+            backgroundColor: Colors.transparent,
+            title: Text(
+              'Select ${appTypes.name} App',
+              overflow: TextOverflow.ellipsis,
+              style:
+                  TextStyle(fontSize: normalTextSize, color: Colors.pinkAccent),
+            ),
+            content: BlocBuilder<AppsCubit, AppsState>(
+              builder: (context, state) {
+                if (state is AppsLoaded)
+                  return Card(
+                    color: Colors.transparent,
+                    child: Container(
+                      height: deviceHeight / 2,
+                      width: deviceWidth,
+                      child: ListView(
+                        physics: ScrollPhysics(),
+                        shrinkWrap: true,
+                        children: <Widget>[
+                          for (final app in state.apps)
+                            GestureDetector(
+                              onTap: () async {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                                final ShortcutAppsModel shortcutApps =
+                                    state.shortcutAppsModel;
+
+                                switch (appTypes) {
+                                  case ShortcutAppTypes.CAMERA:
+                                    shortcutApps.camera = app.packageName;
+                                    break;
+                                  case ShortcutAppTypes.MESSAGE:
+                                    shortcutApps.message = app.packageName;
+                                    break;
+                                  case ShortcutAppTypes.PHONE:
+                                    shortcutApps.phone = app.packageName;
+                                    break;
+                                  case ShortcutAppTypes.SETTINGS:
+                                    shortcutApps.setting = app.packageName;
+                                    break;
+
+                                  default:
+                                    break;
+                                }
+
+                                BlocProvider.of<AppsCubit>(context)
+                                    .updateShortcutApps(shortcutApps);
+
+                                SuccessMessage(
+                                  message:
+                                      '${appTypes.name} application selected successfully.',
+                                  context: context,
+                                ).display();
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.all(5),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        app is ApplicationWithIcon
+                                            ? CircleAvatar(
+                                                backgroundImage: MemoryImage(
+                                                  app.icon,
+                                                ),
+                                                backgroundColor: Colors.white,
+                                              )
+                                            : Icon(
+                                                Icons.apps,
+                                                size: iconSize,
+                                              ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: Text(
+                                              app.appName,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: normalTextSize),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    // Divider()
+                                  ],
+                                ),
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
+                  );
+                else
+                  return Container(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  );
+              },
+            ),
+          );
+        },
+      );
+    }
+
+    Widget shortcutAppsBuild(
+        IconData icon, String application, ShortcutAppTypes appType) {
+      return GestureDetector(
+        onTap: () async {
+          if (application == null) {
+            _showAppSelectDialog(appType);
+          } else {
+            try {
+              // Todo : Need to fix this.
+              // there is bug where system dial app is not working for some phone or dial app is not visible in device apps
+
+              if (appType == ShortcutAppTypes.PHONE)
+                _launchCaller();
+              else {
+                bool isLaunchAble = await DeviceApps.openApp(application);
+                Logger().w(isLaunchAble);
+                if (!isLaunchAble) {
+                  // _showAppSelectDialog(appType);
+                  Navigator.pop(context);
+                  // DeviceApps.openAppSettings(application);
+                  ErrorMessage(
+                          context: context,
+                          fn: () => DeviceApps.openAppSettings(application),
+                          seconds: 4,
+                          error:
+                              "Please tap here to enable the application first or long press on the app icon to change application.")
+                      .display();
+                }
+              }
+            } catch (error) {
+              Logger().w(error);
+              ErrorMessage(
+                      context: context,
+                      error: "Something went wrong, Please try again.")
+                  .display();
+            }
+          }
+        },
+        onLongPress: () => _showAppSelectDialog(appType),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 30.0),
+          child: Icon(
+            icon,
+            size: iconSize,
+            color: Colors.white,
+          ),
+        ),
+      );
+    }
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -126,13 +242,14 @@ class Home extends StatelessWidget {
         // systemNavigationBarColor: Color.fromRGBO(72, 33, 79, 1),
       ),
     );
+
     return WillPopScope(
       onWillPop: () async => false,
       child: Focus(
         onFocusChange: (isFocusChanged) {
           if (isFocusChanged) {
             opacityCubit.opacityReset();
-            appsCubit.updateApps();
+            appsCubit.loadApps();
           }
         },
         child: Scaffold(
@@ -154,7 +271,6 @@ class Home extends StatelessWidget {
                                   GestureDetector(
                                     onTap: () {
                                       opacityCubit.setOpacitySemi();
-
                                       Navigator.pushNamed(
                                           context, AppDrawer.route);
                                     },
@@ -165,7 +281,7 @@ class Home extends StatelessWidget {
                                         child: Hero(
                                           tag: 'drawer',
                                           child: Image.asset(
-                                            "assets/images/drawer.png",
+                                            starterIcon,
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -174,36 +290,31 @@ class Home extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              Column(children: [
-                                shortcutAppsBuild(
-                                  Icon(
-                                    Icons.phone,
-                                    color: Colors.white,
-                                  ),
-                                  () => _launchCaller(),
-                                ),
-                                shortcutAppsBuild(
-                                  Icon(
-                                    Icons.sms,
-                                    color: Colors.white,
-                                  ),
-                                  () => DeviceApps.openApp(messagesPackageName),
-                                ),
-                                shortcutAppsBuild(
-                                  Icon(
-                                    Icons.camera,
-                                    color: Colors.white,
-                                  ),
-                                  () => DeviceApps.openApp(cameraPackageName),
-                                ),
-                                shortcutAppsBuild(
-                                  Icon(
-                                    Icons.settings,
-                                    color: Colors.white,
-                                  ),
-                                  () => DeviceApps.openApp(settingsPackageName),
-                                )
-                              ]),
+                              BlocBuilder<AppsCubit, AppsState>(
+                                builder: (context, state) {
+                                  if (state is AppsLoaded) {
+                                    return Column(children: [
+                                      shortcutAppsBuild(
+                                          Icons.phone,
+                                          state.shortcutAppsModel.phone,
+                                          ShortcutAppTypes.PHONE),
+                                      shortcutAppsBuild(
+                                          Icons.sms,
+                                          state.shortcutAppsModel.message,
+                                          ShortcutAppTypes.MESSAGE),
+                                      shortcutAppsBuild(
+                                          Icons.camera,
+                                          state.shortcutAppsModel.camera,
+                                          ShortcutAppTypes.CAMERA),
+                                      shortcutAppsBuild(
+                                          Icons.settings,
+                                          state.shortcutAppsModel.setting,
+                                          ShortcutAppTypes.SETTINGS)
+                                    ]);
+                                  } else
+                                    return Container();
+                                },
+                              ),
                               Opacity(
                                 opacity: 0,
                                 child: IconButton(
@@ -228,31 +339,52 @@ class Home extends StatelessWidget {
                 ),
               );
             else if (state is AppsLoaded) {
-              apps = state.apps;
-              getShortcutApps(apps);
-              return Container(
-                key: scaffoldKey,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                  image: AssetImage("assets/images/wallpaper.jpg"),
-                  fit: BoxFit.cover,
-                )),
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        scaffoldKey.currentState.openDrawer();
-                      },
-                      child: Container(
-                          color: Colors.transparent,
-                          height: MediaQuery.of(context).size.height,
-                          child: SizedBox(
-                            width: 70,
-                          )),
-                    ),
-                  ],
+              return GestureDetector(
+                onLongPress: () async {
+                  pickImageFile(context, (image) async {
+                    if (image == null) {
+                      CustomSnackBar(
+                              context: context,
+                              message: "No image is selected",
+                              color: Colors.yellow)
+                          .display();
+                    } else {
+                      setState(() {
+                        currentWallpaper = image.path;
+                        LocalStorage.setWallpaper(image.path);
+                      });
+                      SuccessMessage(
+                              context: context,
+                              message: "Wallpaper changed successfully")
+                          .display();
+                    }
+                    ;
+                  });
+                },
+                child: Container(
+                  key: scaffoldKey,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    image: currentWallpaper != null
+                        ? FileImage(File(currentWallpaper))
+                        : AssetImage(defaultWallpaper),
+                    fit: BoxFit.cover,
+                  )),
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () => Scaffold.of(context).openDrawer(),
+                        child: Container(
+                            color: Colors.transparent,
+                            height: MediaQuery.of(context).size.height,
+                            child: SizedBox(
+                              width: 70,
+                            )),
+                      ),
+                    ],
+                  ),
                 ),
               );
             } else {
@@ -283,11 +415,4 @@ class Home extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget shortcutAppsBuild(Icon icon, Function fn) {
-  return Padding(
-    padding: const EdgeInsets.only(top: 15.0),
-    child: IconButton(icon: icon, onPressed: fn),
-  );
 }

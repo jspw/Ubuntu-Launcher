@@ -1,8 +1,6 @@
-
-
 import 'package:device_apps/device_apps.dart';
 
-class AppsRepository{
+class AppsApiProvider {
   Future<List<Application>> fetchAppList() async {
     List<Application> apps = await DeviceApps.getInstalledApplications(
         includeAppIcons: true,
