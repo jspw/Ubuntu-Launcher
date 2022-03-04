@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:launcher/src/blocs/apps_cubit.dart';
 import 'package:launcher/src/config/constants/colors.dart';
 import 'package:launcher/src/config/constants/enums.dart';
@@ -10,27 +13,54 @@ import 'package:launcher/src/config/constants/size.dart';
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
 import 'package:launcher/src/core/modules/apps/views/app_drawer.dart';
 import 'package:launcher/src/data/models/shortcut_app_model.dart';
+import 'package:launcher/src/helpers/utilities/image_picker.dart';
+import 'package:launcher/src/helpers/utilities/local_storage.dart';
+import 'package:launcher/src/helpers/widgets/custom_snackbar.dart';
 import 'package:launcher/src/helpers/widgets/error_message.dart';
 import 'package:launcher/src/helpers/widgets/success_message.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   static const route = '/';
-  var scaffoldKey = GlobalKey<ScaffoldState>();
+  @override
+  State<StatefulWidget> createState() {
+    return HomeState();
+  }
+}
+
+class HomeState extends State {
+  GlobalKey scaffoldKey = GlobalKey<ScaffoldState>();
 
   double sidebarOpacity = 1;
 
+  String defaultWallpaper = "assets/images/wallpaper.jpg";
+
+  String starterIcon = "assets/images/drawer.png";
+
   bool autoOpenDrawer;
 
-  // _launchCaller() async {
-  //   const url = "tel:";
-  //   if (await canLaunch(url)) {
-  //     await launch(url);
-  //   } else {
-  //     throw 'Could not launch $url';
-  //   }
-  // }
+  String currentWallpaper;
+
+  Future<void> loadWallpaper() async {
+    currentWallpaper = await LocalStorage.getWallpaper();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    loadWallpaper();
+    super.initState();
+  }
+
+  _launchCaller() async {
+    const url = "tel:";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,19 +193,26 @@ class Home extends StatelessWidget {
             _showAppSelectDialog(appType);
           } else {
             try {
-              bool isLaunchAble = await DeviceApps.openApp(application);
-              Logger().w(isLaunchAble);
-              if (!isLaunchAble) {
-                // _showAppSelectDialog(appType);
-                Navigator.pop(context);
-                // DeviceApps.openAppSettings(application);
-                ErrorMessage(
-                        context: context,
-                        fn: () => DeviceApps.openAppSettings(application),
-                        seconds: 4,
-                        error:
-                            "Please tap here to enable the application first or long press on the app icon to change application.")
-                    .display();
+              // Todo : Need to fix this.
+              // there is bug where system dial app is not working for some phone or dial app is not visible in device apps
+
+              if (appType == ShortcutAppTypes.PHONE)
+                _launchCaller();
+              else {
+                bool isLaunchAble = await DeviceApps.openApp(application);
+                Logger().w(isLaunchAble);
+                if (!isLaunchAble) {
+                  // _showAppSelectDialog(appType);
+                  Navigator.pop(context);
+                  // DeviceApps.openAppSettings(application);
+                  ErrorMessage(
+                          context: context,
+                          fn: () => DeviceApps.openAppSettings(application),
+                          seconds: 4,
+                          error:
+                              "Please tap here to enable the application first or long press on the app icon to change application.")
+                      .display();
+                }
               }
             } catch (error) {
               Logger().w(error);
@@ -205,6 +242,7 @@ class Home extends StatelessWidget {
         // systemNavigationBarColor: Color.fromRGBO(72, 33, 79, 1),
       ),
     );
+
     return WillPopScope(
       onWillPop: () async => false,
       child: Focus(
@@ -243,7 +281,7 @@ class Home extends StatelessWidget {
                                         child: Hero(
                                           tag: 'drawer',
                                           child: Image.asset(
-                                            "assets/images/drawer.png",
+                                            starterIcon,
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -301,29 +339,52 @@ class Home extends StatelessWidget {
                 ),
               );
             else if (state is AppsLoaded) {
-              return Container(
-                key: scaffoldKey,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                  image: AssetImage("assets/images/wallpaper.jpg"),
-                  fit: BoxFit.cover,
-                )),
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        scaffoldKey.currentState.openDrawer();
-                      },
-                      child: Container(
-                          color: Colors.transparent,
-                          height: MediaQuery.of(context).size.height,
-                          child: SizedBox(
-                            width: 70,
-                          )),
-                    ),
-                  ],
+              return GestureDetector(
+                onLongPress: () async {
+                  pickImageFile(context, (image) async {
+                    if (image == null) {
+                      CustomSnackBar(
+                              context: context,
+                              message: "No image is selected",
+                              color: Colors.yellow)
+                          .display();
+                    } else {
+                      setState(() {
+                        currentWallpaper = image.path;
+                        LocalStorage.setWallpaper(image.path);
+                      });
+                      SuccessMessage(
+                              context: context,
+                              message: "Wallpaper changed successfully")
+                          .display();
+                    }
+                    ;
+                  });
+                },
+                child: Container(
+                  key: scaffoldKey,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    image: currentWallpaper != null
+                        ? FileImage(File(currentWallpaper))
+                        : AssetImage(defaultWallpaper),
+                    fit: BoxFit.cover,
+                  )),
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () => Scaffold.of(context).openDrawer(),
+                        child: Container(
+                            color: Colors.transparent,
+                            height: MediaQuery.of(context).size.height,
+                            child: SizedBox(
+                              width: 70,
+                            )),
+                      ),
+                    ],
+                  ),
                 ),
               );
             } else {

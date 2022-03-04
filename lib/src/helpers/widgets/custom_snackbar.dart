@@ -14,9 +14,9 @@ class CustomSnackBar {
   CustomSnackBar({
     @required this.context,
     @required this.message,
-    this.seconds,
+    this.seconds: 2,
     this.fn,
-    this.days,
+    this.days: 0,
     this.color,
     this.key,
   });

@@ -42,6 +42,17 @@ class LocalStorage {
     return prefs.getString('sortType');
   }
 
+  static Future<void> setWallpaper(String path) async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setString("wallpaper", path);
+  }
+
+  static Future<String> getWallpaper() async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    String image = preferences.getString("wallpaper");
+    return image;
+  }
+
   static Future<void> clearAll() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
