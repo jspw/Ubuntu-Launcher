@@ -1,0 +1,1 @@
+<i>Ubuntu Launcher</i> ist ein leichtergewichtiger für Ersatz für deinen Standart Launcher. Er ist noch in frühen Entwicklungszeiten, heißt es sind hoffentlich noch mehr Inhalte etc. zu erwarten.
