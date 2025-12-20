@@ -1,12 +1,10 @@
 import 'dart:io';
 
-import 'package:device_apps/device_apps.dart';
+import 'package:installed_apps/installed_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:launcher/src/blocs/apps_cubit.dart';
-import 'package:launcher/src/config/constants/colors.dart';
 import 'package:launcher/src/config/constants/enums.dart';
 import 'package:launcher/src/config/constants/size.dart';
 
@@ -23,13 +21,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
   static const route = '/';
+
+  const Home({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return HomeState();
   }
 }
 
-class HomeState extends State {
+class HomeState extends State<Home> {
   GlobalKey scaffoldKey = GlobalKey<ScaffoldState>();
 
   double sidebarOpacity = 1;
@@ -38,9 +39,9 @@ class HomeState extends State {
 
   String starterIcon = "assets/images/drawer.png";
 
-  bool autoOpenDrawer;
+  bool? autoOpenDrawer;
 
-  String currentWallpaper;
+  String? currentWallpaper;
 
   Future<void> loadWallpaper() async {
     currentWallpaper = await LocalStorage.getWallpaper();
@@ -54,9 +55,9 @@ class HomeState extends State {
   }
 
   _launchCaller() async {
-    const url = "tel:";
-    if (await canLaunch(url)) {
-      await launch(url);
+    final Uri url = Uri.parse("tel:");
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
     } else {
       throw 'Could not launch $url';
     }
@@ -68,7 +69,7 @@ class HomeState extends State {
 
     final opacityCubit = BlocProvider.of<OpacityCubit>(context);
 
-    Future<void> _showAppSelectDialog(ShortcutAppTypes appTypes) async {
+    Future<void> showAppSelectDialog(ShortcutAppTypes appTypes) async {
       return showDialog<void>(
         context: context,
         barrierDismissible: true, // user must tap button!
@@ -85,14 +86,14 @@ class HomeState extends State {
             ),
             content: BlocBuilder<AppsCubit, AppsState>(
               builder: (context, state) {
-                if (state is AppsLoaded)
+                if (state is AppsLoaded) {
                   return Card(
                     color: Colors.transparent,
-                    child: Container(
+                    child: SizedBox(
                       height: deviceHeight / 2,
                       width: deviceWidth,
                       child: ListView(
-                        physics: ScrollPhysics(),
+                        physics: const ScrollPhysics(),
                         shrinkWrap: true,
                         children: <Widget>[
                           for (final app in state.apps)
@@ -116,9 +117,6 @@ class HomeState extends State {
                                   case ShortcutAppTypes.SETTINGS:
                                     shortcutApps.setting = app.packageName;
                                     break;
-
-                                  default:
-                                    break;
                                 }
 
                                 BlocProvider.of<AppsCubit>(context)
@@ -136,10 +134,10 @@ class HomeState extends State {
                                   children: [
                                     Row(
                                       children: [
-                                        app is ApplicationWithIcon
+                                        app.icon != null
                                             ? CircleAvatar(
                                                 backgroundImage: MemoryImage(
-                                                  app.icon,
+                                                  app.icon!,
                                                 ),
                                                 backgroundColor: Colors.white,
                                               )
@@ -147,14 +145,14 @@ class HomeState extends State {
                                                 Icons.apps,
                                                 size: iconSize,
                                               ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                         Expanded(
                                           child: Padding(
                                             padding: const EdgeInsets.all(10.0),
                                             child: Text(
-                                              app.appName,
+                                              app.name,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                   color: Colors.white,
@@ -173,11 +171,12 @@ class HomeState extends State {
                       ),
                     ),
                   );
-                else
+                } else {
                   return Container(
                     alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
+                    child: const CircularProgressIndicator(),
                   );
+                }
               },
             ),
           );
@@ -186,33 +185,20 @@ class HomeState extends State {
     }
 
     Widget shortcutAppsBuild(
-        IconData icon, String application, ShortcutAppTypes appType) {
+        IconData icon, String? application, ShortcutAppTypes appType) {
       return GestureDetector(
         onTap: () async {
           if (application == null) {
-            _showAppSelectDialog(appType);
+            showAppSelectDialog(appType);
           } else {
             try {
               // Todo : Need to fix this.
               // there is bug where system dial app is not working for some phone or dial app is not visible in device apps
 
-              if (appType == ShortcutAppTypes.PHONE)
+              if (appType == ShortcutAppTypes.PHONE) {
                 _launchCaller();
-              else {
-                bool isLaunchAble = await DeviceApps.openApp(application);
-                Logger().w(isLaunchAble);
-                if (!isLaunchAble) {
-                  // _showAppSelectDialog(appType);
-                  Navigator.pop(context);
-                  // DeviceApps.openAppSettings(application);
-                  ErrorMessage(
-                          context: context,
-                          fn: () => DeviceApps.openAppSettings(application),
-                          seconds: 4,
-                          error:
-                              "Please tap here to enable the application first or long press on the app icon to change application.")
-                      .display();
-                }
+              } else {
+                await InstalledApps.startApp(application);
               }
             } catch (error) {
               Logger().w(error);
@@ -223,7 +209,7 @@ class HomeState extends State {
             }
           }
         },
-        onLongPress: () => _showAppSelectDialog(appType),
+        onLongPress: () => showAppSelectDialog(appType),
         child: Padding(
           padding: const EdgeInsets.only(top: 30.0),
           child: Icon(
@@ -236,15 +222,15 @@ class HomeState extends State {
     }
 
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
+      const SystemUiOverlayStyle(
         statusBarIconBrightness: Brightness.light,
         statusBarColor: Color.fromRGBO(39, 21, 40, 0.5),
         // systemNavigationBarColor: Color.fromRGBO(72, 33, 79, 1),
       ),
     );
 
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: Focus(
         onFocusChange: (isFocusChanged) {
           if (isFocusChanged) {
@@ -259,7 +245,7 @@ class HomeState extends State {
                 opacity: state is OpacityInitial ? 1 : .30,
                 child: SafeArea(
                     child: Container(
-                        color: Color.fromRGBO(39, 21, 40, 0.5),
+                        color: const Color.fromRGBO(39, 21, 40, 0.5),
                         // Colors.pink.withOpacity(0.5),
                         height: MediaQuery.of(context).size.height,
                         width: 60.0,
@@ -311,25 +297,26 @@ class HomeState extends State {
                                           state.shortcutAppsModel.setting,
                                           ShortcutAppTypes.SETTINGS)
                                     ]);
-                                  } else
+                                  } else {
                                     return Container();
+                                  }
                                 },
                               ),
                               Opacity(
                                 opacity: 0,
                                 child: IconButton(
-                                    onPressed: () {}, icon: Icon(Icons.menu)),
+                                    onPressed: () {}, icon: const Icon(Icons.menu)),
                               ),
                             ]))),
               );
             },
           ),
           body: BlocBuilder<AppsCubit, AppsState>(builder: (context, state) {
-            if (state is AppsLoading)
+            if (state is AppsLoading) {
               return SafeArea(
                 child: Container(
                   key: scaffoldKey,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       image: DecorationImage(
                     image: AssetImage("assets/images/boot2.gif"),
                     fit: BoxFit.fill,
@@ -338,7 +325,7 @@ class HomeState extends State {
                   width: MediaQuery.of(context).size.width,
                 ),
               );
-            else if (state is AppsLoaded) {
+            } else if (state is AppsLoaded) {
               return GestureDetector(
                 onLongPress: () async {
                   pickImageFile(context, (image) async {
@@ -358,7 +345,6 @@ class HomeState extends State {
                               message: "Wallpaper changed successfully")
                           .display();
                     }
-                    ;
                   });
                 },
                 child: Container(
@@ -366,8 +352,8 @@ class HomeState extends State {
                   decoration: BoxDecoration(
                       image: DecorationImage(
                     image: currentWallpaper != null
-                        ? FileImage(File(currentWallpaper))
-                        : AssetImage(defaultWallpaper),
+                        ? FileImage(File(currentWallpaper!)) as ImageProvider
+                        : AssetImage(defaultWallpaper) as ImageProvider,
                     fit: BoxFit.cover,
                   )),
                   height: MediaQuery.of(context).size.height,
@@ -379,7 +365,7 @@ class HomeState extends State {
                         child: Container(
                             color: Colors.transparent,
                             height: MediaQuery.of(context).size.height,
-                            child: SizedBox(
+                            child: const SizedBox(
                               width: 70,
                             )),
                       ),
@@ -392,7 +378,7 @@ class HomeState extends State {
                 children: [
                   Container(
                     key: scaffoldKey,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         image: DecorationImage(
                       image:
                           AssetImage("assets/images/ubuntu-splash-screen.gif"),
@@ -401,7 +387,7 @@ class HomeState extends State {
                     height: MediaQuery.of(context).size.height,
                     width: MediaQuery.of(context).size.width,
                   ),
-                  Align(
+                  const Align(
                     alignment: Alignment.bottomCenter,
                     child: Text("Something went wrong!"),
                   )

@@ -5,9 +5,7 @@ import 'package:launcher/src/config/constants/size.dart';
 class Page404 extends StatelessWidget {
   final String errorMessage;
 
-  const Page404({Key key, @required this.errorMessage})
-      : assert(errorMessage != null),
-        super(key: key);
+  const Page404({super.key, required this.errorMessage});
 
   @override
   Widget build(BuildContext context) {

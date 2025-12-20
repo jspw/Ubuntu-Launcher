@@ -1,10 +1,12 @@
-import 'dart:ui';
+import 'dart:ui' as ui;
 
-final double pixelRatio = window.devicePixelRatio;
+final ui.FlutterView _view = ui.PlatformDispatcher.instance.implicitView!;
 
-final double physicalHeight = window.physicalSize.height;
+final double pixelRatio = _view.devicePixelRatio;
 
-final double physicalWidth = window.physicalSize.width;
+final double physicalHeight = _view.physicalSize.height;
+
+final double physicalWidth = _view.physicalSize.width;
 
 final double deviceHeight = physicalHeight / pixelRatio;
 

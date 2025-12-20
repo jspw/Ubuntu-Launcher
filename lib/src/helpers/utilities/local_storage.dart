@@ -6,10 +6,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LocalStorage {
   static Future<void> setShortcutApps(ShortcutAppsModel shortcutApps) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(ShortcutAppTypes.CAMERA.name, shortcutApps.camera);
-    prefs.setString(ShortcutAppTypes.PHONE.name, shortcutApps.phone);
-    prefs.setString(ShortcutAppTypes.SETTINGS.name, shortcutApps.setting);
-    prefs.setString(ShortcutAppTypes.MESSAGE.name, shortcutApps.message);
+    if (shortcutApps.camera != null) {
+      prefs.setString(ShortcutAppTypes.CAMERA.name, shortcutApps.camera!);
+    }
+    if (shortcutApps.phone != null) {
+      prefs.setString(ShortcutAppTypes.PHONE.name, shortcutApps.phone!);
+    }
+    if (shortcutApps.setting != null) {
+      prefs.setString(ShortcutAppTypes.SETTINGS.name, shortcutApps.setting!);
+    }
+    if (shortcutApps.message != null) {
+      prefs.setString(ShortcutAppTypes.MESSAGE.name, shortcutApps.message!);
+    }
   }
 
   static Future<ShortcutAppsModel> getShortcutApps() async {
@@ -37,7 +45,7 @@ class LocalStorage {
     prefs.setString('sortType', sortType);
   }
 
-  static Future<String> getSortType() async {
+  static Future<String?> getSortType() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('sortType');
   }
@@ -47,9 +55,9 @@ class LocalStorage {
     preferences.setString("wallpaper", path);
   }
 
-  static Future<String> getWallpaper() async {
+  static Future<String?> getWallpaper() async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
-    String image = preferences.getString("wallpaper");
+    String? image = preferences.getString("wallpaper");
     return image;
   }
 

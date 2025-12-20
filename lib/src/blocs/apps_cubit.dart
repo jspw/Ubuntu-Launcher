@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:device_apps/device_apps.dart';
+import 'package:installed_apps/app_info.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:launcher/src/config/constants/enums.dart';
@@ -12,15 +12,13 @@ part 'apps_state.dart';
 
 class AppsCubit extends Cubit<AppsState> {
   final AppsApiProvider appsApiProvider;
-  AppsCubit({@required this.appsApiProvider}) : super(AppsInitiateState()) {
-    listenApps();
-  }
+  AppsCubit({required this.appsApiProvider}) : super(AppsInitiateState());
 
   Future<void> loadApps() async {
     if (state is! AppsLoaded) emit(AppsLoading());
 
     try {
-      List<Application> apps = await appsApiProvider.fetchAppList();
+      List<AppInfo> apps = await appsApiProvider.fetchAppList();
       String sortType = await LocalStorage.getSortType() ??
           getCurrentPayloads(
               appsStatePayloadTypes: AppsStatePayloadTypes.SORT_TYPE) ??
@@ -35,14 +33,14 @@ class AppsCubit extends Cubit<AppsState> {
       emit(AppsLoaded(
           shortcutAppsModel: shortcutApps,
           apps: apps,
-          sortType: sortType ?? SortTypes.Alphabetically.name));
+          sortType: sortType));
     } catch (error) {
       Logger().w(error);
       emit(AppsError(error.toString()));
     }
   }
 
-  void updateApps(List<Application> apps) {
+  void updateApps(List<AppInfo> apps) {
     final shortcutApps = getCurrentPayloads(
         appsStatePayloadTypes: AppsStatePayloadTypes.SHORTCUT_APPS);
     final sortType = getCurrentPayloads(
@@ -62,7 +60,7 @@ class AppsCubit extends Cubit<AppsState> {
             appsStatePayloadTypes: AppsStatePayloadTypes.SHORTCUT_APPS)));
   }
 
-  dynamic getCurrentPayloads({AppsStatePayloadTypes appsStatePayloadTypes}) {
+  dynamic getCurrentPayloads({AppsStatePayloadTypes? appsStatePayloadTypes}) {
     if (state is AppsLoaded) {
       final appState = state as AppsLoaded;
       return appsStatePayloadTypes == AppsStatePayloadTypes.APPS
@@ -76,12 +74,13 @@ class AppsCubit extends Cubit<AppsState> {
                       appState.shortcutAppsModel,
                       appState.sortType
                     };
-    } else
+    } else {
       return null;
+    }
   }
 
-  Future<ShortcutAppsModel> getShortcutApps(List<Application> apps) async {
-    String settings, camera, sms, phone;
+  Future<ShortcutAppsModel> getShortcutApps(List<AppInfo> apps) async {
+    String? settings, camera, sms, phone;
 
     try {
       final isNewUser = await LocalStorage.isUserNew();
@@ -91,24 +90,24 @@ class AppsCubit extends Cubit<AppsState> {
         return shortcutApps;
       } else {
         for (int i = 0; i < apps.length; i++) {
-          Application app = apps[i];
-          if (app.appName == "Settings") {
+          AppInfo app = apps[i];
+          if (app.name == "Settings") {
             settings = apps[i].packageName;
-          } else if (app.appName.toLowerCase().contains("camera")) {
+          } else if (app.name.toLowerCase().contains("camera")) {
             camera = apps[i].packageName;
-          } else if (app.appName.toLowerCase().contains("message") ||
-              app.appName.toLowerCase().contains("messaging") ||
-              app.appName.toLowerCase().contains("sms") ||
-              app.appName.toLowerCase().contains("messenger")) {
+          } else if (app.name.toLowerCase().contains("message") ||
+              app.name.toLowerCase().contains("messaging") ||
+              app.name.toLowerCase().contains("sms") ||
+              app.name.toLowerCase().contains("messenger")) {
             sms = apps[i].packageName;
-          } else if (app.appName.toLowerCase().contains("phone") ||
-              app.appName.toLowerCase().contains("call") ||
-              app.appName.toLowerCase().contains("dial")) {
+          } else if (app.name.toLowerCase().contains("phone") ||
+              app.name.toLowerCase().contains("call") ||
+              app.name.toLowerCase().contains("dial")) {
             phone = apps[i].packageName;
           }
         }
 
-        final shortcutApps = new ShortcutAppsModel(
+        final shortcutApps = ShortcutAppsModel(
             phone: phone, camera: camera, setting: settings, message: sms);
 
         if (shortcutApps.phone != null &&
@@ -123,6 +122,7 @@ class AppsCubit extends Cubit<AppsState> {
       }
     } catch (error) {
       Logger().w(error);
+      return ShortcutAppsModel();
     }
   }
 
@@ -150,67 +150,20 @@ class AppsCubit extends Cubit<AppsState> {
         apps: apps, sortType: sortType, shortcutAppsModel: shortcutApps));
   }
 
-  Future<void> listenApps() async {
-    try {
-      Stream<ApplicationEvent> appsEvent = DeviceApps.listenToAppsChanges();
-
-      appsEvent.listen((event) async {
-        if (state is AppsLoaded) {
-          final appState = state as AppsLoaded;
-          final apps = appState.apps;
-
-          Logger().wtf(event);
-
-          if (event.event == ApplicationEventType.disabled) {
-            final applicationEventType = event as ApplicationEventDisabled;
-            Application app =
-                await DeviceApps.getApp(applicationEventType.packageName);
-            apps.add(app);
-            loadApps();
-            Logger()
-                .w("${applicationEventType.application.appName} is enabled");
-          } else if (event.event == ApplicationEventType.enabled) {
-            apps.removeWhere(
-                (element) => element.packageName == event.packageName);
-            Logger().w("${event.packageName} is disabled");
-          } else if (event.event == ApplicationEventType.uninstalled) {
-            final applicationEventType = event as ApplicationEventUninstalled;
-
-            apps.removeWhere((element) =>
-                element.packageName == applicationEventType.packageName);
-            Logger().w("${applicationEventType.packageName} is uninstalled");
-          } else if (event.event == ApplicationEventType.installed) {
-            final applicationEventType = event as ApplicationEventInstalled;
-            Application app =
-                await DeviceApps.getApp(applicationEventType.packageName);
-            apps.add(app);
-            loadApps();
-
-            Logger().w("${applicationEventType.application} is installed");
-          }
-
-          updateApps(apps);
-        }
-      });
-    } catch (errorMessage) {
-      Logger().w(errorMessage);
-      emit(AppsError(errorMessage.toString()));
-    }
-  }
-
-  List<Application> getAppsSorted(
-      {List<Application> appsToSort, String sortType}) {
-    List<Application> apps = appsToSort ??
+  List<AppInfo> getAppsSorted(
+      {List<AppInfo>? appsToSort, String? sortType}) {
+    List<AppInfo> apps = appsToSort ??
         getCurrentPayloads(appsStatePayloadTypes: AppsStatePayloadTypes.APPS) ??
         [];
 
     if (sortType == null || sortType == SortTypes.Alphabetically.name) {
       apps.sort(
-          (a, b) => a.appName.toLowerCase().compareTo(b.appName.toLowerCase()));
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     } else if (sortType == SortTypes.InstallationTime.name) {
-      apps.sort((b, a) => a.installTimeMillis.compareTo(b.installTimeMillis));
+      apps.sort((b, a) => a.installedTimestamp.compareTo(b.installedTimestamp));
     } else if (sortType == SortTypes.UpdateTime.name) {
-      apps.sort((b, a) => a.updateTimeMillis.compareTo(b.updateTimeMillis));
+      // installed_apps doesn't have updateTime, use installedTimestamp as fallback
+      apps.sort((b, a) => a.installedTimestamp.compareTo(b.installedTimestamp));
     }
 
     return apps;

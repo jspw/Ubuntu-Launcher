@@ -5,9 +5,9 @@ import 'package:launcher/src/config/routes/app_routes.dart';
 import 'package:launcher/src/config/themes/cubit/opacity_cubit.dart';
 import 'package:launcher/src/data/apps_api_provider.dart';
 
-import './config/routes/app_routes.dart';
-
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -23,12 +23,14 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
               primaryColor: Colors.pink,
-              accentColor: Colors.white,
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: Colors.pink,
+                secondary: Colors.white,
+              ),
               visualDensity: VisualDensity.adaptivePlatformDensity,
               canvasColor: Colors.transparent),
           darkTheme: ThemeData(
-            // New
-            brightness: Brightness.light, // New
+            brightness: Brightness.light,
           ),
           title: "Ubuntu Launcher",
           onGenerateRoute: AppRoutes.onGenerateRoute,

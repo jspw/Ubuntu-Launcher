@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-final MaterialColor defaultColor = Colors.blue;
-final MaterialColor dangerColor = Colors.red;
-final MaterialColor warningColor = Colors.yellow;
-final MaterialColor successColor = Colors.green;
-final MaterialColor primaryColor = Colors.blue;
+const MaterialColor defaultColor = Colors.blue;
+const MaterialColor dangerColor = Colors.red;
+const MaterialColor warningColor = Colors.yellow;
+const MaterialColor successColor = Colors.green;
+const MaterialColor primaryColor = Colors.blue;

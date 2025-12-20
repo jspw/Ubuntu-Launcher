@@ -1,4 +1,5 @@
-import 'package:device_apps/device_apps.dart';
+import 'package:installed_apps/installed_apps.dart';
+import 'package:installed_apps/app_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -8,28 +9,27 @@ import 'package:launcher/src/helpers/widgets/error_message.dart';
 import 'package:logger/logger.dart';
 import 'package:launcher/src/config/constants/enums.dart';
 import 'package:launcher/src/blocs/apps_cubit.dart';
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 
 class AppDrawer extends StatelessWidget {
   static const route = '/app-drawer';
-  TextEditingController _searchController;
-  GlobalKey<AutoCompleteTextFieldState<String>> _autoCompeleteTextFieldkey =
-      new GlobalKey();
-  List<String> sortTypes = [
-    SortTypes.Alphabetically.toString().split('.').last,
-    SortTypes.InstallationTime.toString().split('.').last,
-    SortTypes.UpdateTime.toString().split('.').last,
-  ];
-
-  final ratio = 1.1 * 411.42857142857144 / deviceWidth;
-
+  
+  const AppDrawer({super.key});
+  
   @override
   Widget build(BuildContext context) {
     final appsCubit = BlocProvider.of<AppsCubit>(context);
     final opacityCubit = BlocProvider.of<OpacityCubit>(context);
+    
+    final List<String> sortTypes = [
+      SortTypes.Alphabetically.toString().split('.').last,
+      SortTypes.InstallationTime.toString().split('.').last,
+      SortTypes.UpdateTime.toString().split('.').last,
+    ];
 
-    return WillPopScope(
-      onWillPop: () async => true,
+    final ratio = 1.1 * 411.42857142857144 / deviceWidth;
+
+    return PopScope(
+      canPop: true,
       child: Focus(
         onFocusChange: (isFocusChanged) {
           if (isFocusChanged) {
@@ -40,7 +40,7 @@ class AppDrawer extends StatelessWidget {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: PreferredSize(
-            preferredSize: Size.fromHeight(100.0),
+            preferredSize: const Size.fromHeight(100.0),
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -69,7 +69,7 @@ class AppDrawer extends StatelessWidget {
                         ),
                         DropdownButton<String>(
                           // value: sortType,
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.sort,
                             color: Colors.white,
                           ),
@@ -77,13 +77,15 @@ class AppDrawer extends StatelessWidget {
                           elevation: 16,
 
                           focusColor: Colors.green,
-                          style: TextStyle(color: Colors.black),
+                          style: const TextStyle(color: Colors.black),
                           underline: Container(
                             color: Colors.transparent,
-                            child: Text(""),
+                            child: const Text(""),
                           ),
                           onChanged: (sortType) {
-                            appsCubit.updateSortType(sortType);
+                            if (sortType != null) {
+                              appsCubit.updateSortType(sortType);
+                            }
                           },
                           items: sortTypes
                               .map<DropdownMenuItem<String>>((String value) {
@@ -95,7 +97,7 @@ class AppDrawer extends StatelessWidget {
                                   padding: const EdgeInsets.all(5),
                                   child: Text(
                                     value,
-                                    style: TextStyle(color: Colors.black),
+                                    style: const TextStyle(color: Colors.black),
                                   ),
                                 ),
                               ),
@@ -118,36 +120,28 @@ class AppDrawer extends StatelessWidget {
                                     color: Colors.white30,
                                     borderRadius: BorderRadius.circular(15),
                                   ),
-                                  child: SimpleAutoCompleteTextField(
-                                    suggestionsAmount: appState.apps.length,
+                                  child: TextField(
                                     style: TextStyle(
                                         letterSpacing: 1.2,
                                         color: Colors.white,
                                         fontSize: normalTextSize),
-                                    controller: _searchController,
-                                    key: _autoCompeleteTextFieldkey,
-                                    suggestions: appState.apps
-                                        .map((app) => app.appName)
-                                        .toList(),
-                                    textSubmitted: (appName) {
+                                    onSubmitted: (appName) {
                                       for (int i = 0;
                                           i < appState.apps.length;
                                           i++) {
-                                        if (appState.apps[i].appName
+                                        if (appState.apps[i].name
                                                 .toString() ==
                                             appName) {
-                                          DeviceApps.openApp(
+                                          InstalledApps.startApp(
                                               appState.apps[i].packageName);
                                           break;
                                         }
                                       }
                                     },
-                                    clearOnSubmit: true,
-                                    keyboardType: TextInputType.text,
                                     decoration: InputDecoration(
                                       contentPadding: const EdgeInsets.all(10),
                                       border: InputBorder.none,
-                                      suffixIcon: Icon(
+                                      suffixIcon: const Icon(
                                         Icons.search_sharp,
                                         color: Colors.grey,
                                       ),
@@ -162,8 +156,9 @@ class AppDrawer extends StatelessWidget {
                                           '   Type to search applications',
                                     ),
                                   ));
-                            } else
+                            } else {
                               return Container();
+                            }
                           },
                         )),
                   ),
@@ -191,15 +186,15 @@ class AppDrawer extends StatelessWidget {
                       ),
                     );
                   } else if (state is AppsLoaded) {
-                    return StaggeredGridView.countBuilder(
+                    return MasonryGridView.count(
                       crossAxisCount: ((4 * deviceWidth) / 432).round(),
                       itemCount: state.apps.length,
                       itemBuilder: (BuildContext context, int i) {
-                        Application app = state.apps[i];
+                        AppInfo app = state.apps[i];
                         return GestureDetector(
                             onTap: () {
                               try {
-                                DeviceApps.openApp(app.packageName);
+                                InstalledApps.startApp(app.packageName);
                               } catch (error) {
                                 Logger().w(error);
                                 ErrorMessage(
@@ -212,19 +207,10 @@ class AppDrawer extends StatelessWidget {
                             onLongPress: () async {
                               try {
                                 Navigator.pop(context);
-                                // if (LocalPlatform().isAndroid) {
-                                //   final AndroidIntent intent = AndroidIntent(
-                                //     action:
-                                //         'action_application_details_settings',
-                                //     data: 'package:' +
-                                //         app.packageName, // replace com.example.app with your applicationId
-                                //   );
-                                //   await intent.launch();
-                                // }
-                                DeviceApps.openAppSettings(app.packageName);
+                                InstalledApps.openSettings(app.packageName);
                               } catch (error) {
                                 Logger().w(error);
-                                ErrorMessage(context: context, error: error)
+                                ErrorMessage(context: context, error: error.toString())
                                     .display();
                               }
                             },
@@ -236,28 +222,24 @@ class AppDrawer extends StatelessWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
-                                    app is ApplicationWithIcon
-                                        ? Container(
-                                            child: CircleAvatar(
-                                              backgroundImage: MemoryImage(
-                                                app.icon,
-                                              ),
-                                              backgroundColor: Colors.white,
+                                    app.icon != null
+                                        ? CircleAvatar(
+                                            backgroundImage: MemoryImage(
+                                              app.icon!,
                                             ),
+                                            backgroundColor: Colors.white,
                                           )
-                                        : Container(
-                                            child: CircleAvatar(
-                                              backgroundImage: AssetImage(
-                                                  "assets/images/no_image.png"),
-                                              backgroundColor: Colors.white,
-                                            ),
+                                        : const CircleAvatar(
+                                            backgroundImage: AssetImage(
+                                                "assets/images/no_image.png"),
+                                            backgroundColor: Colors.white,
                                           ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 5,
                                     ),
                                     Expanded(
                                       child: Text(
-                                        app.appName,
+                                        app.name,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             color: Colors.white,
@@ -273,15 +255,13 @@ class AppDrawer extends StatelessWidget {
                               ),
                             ));
                       },
-                      staggeredTileBuilder: (int index) =>
-                          new StaggeredTile.count(1, ratio < 1.2 ? ratio : 1.0),
                     );
-                  } else
+                  } else {
                     return Center(
                       child: Column(
                         children: [
-                          RefreshProgressIndicator(),
-                          Text(
+                          const RefreshProgressIndicator(),
+                          const Text(
                             "Something Went Wrong",
                             style:
                                 TextStyle(color: Colors.white, fontSize: 20.0),
@@ -289,6 +269,7 @@ class AppDrawer extends StatelessWidget {
                         ],
                       ),
                     );
+                  }
                 },
               ),
             ),

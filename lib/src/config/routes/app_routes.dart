@@ -8,10 +8,10 @@ class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case Home.route:
-        return MaterialPageRoute(builder: (_) => Home());
+        return MaterialPageRoute(builder: (_) => const Home());
 
       case AppDrawer.route:
-        return RouteAnimator.createRoute(AppDrawer());
+        return RouteAnimator.createRoute(const AppDrawer());
 
       default:
         return MaterialPageRoute(

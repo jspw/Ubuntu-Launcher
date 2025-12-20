@@ -73,9 +73,29 @@ At first, it was made for myself having simple look and customization. Then i de
 
 ## Requirements
 
-- MinSdkVersion 16 (Android 4.1.x)
-- **TargetSdkVersion 28 (Android 9)**
-- Hopefully will work fine above android 4.1.x
+- MinSdkVersion 21 (Android 5.0)
+- **TargetSdkVersion 35 (Android 15)**
+- Compatible with the latest Android 14/15 versions
+
+## Building from Source
+
+To build the APKs for different architectures (split per ABI), run:
+
+```bash
+flutter build apk --split-per-abi
+```
+
+The generated APKs will be located in `build/app/outputs/flutter-apk/`.
+
+### Which APK to choose?
+
+| APK File | Architecture | Description |
+|----------|--------------|-------------|
+| **app-arm64-v8a-release.apk** | `arm64-v8a` | **Best for most modern smartphones** (from approx. 2016 onwards). If you have a newer phone, this is likely the one you need. |
+| **app-armeabi-v7a-release.apk** | `armeabi-v7a` | For older or lower-end devices that run on 32-bit architecture. |
+| **app-x86_64-release.apk** | `x86_64` | Primarily for running on Android Emulators (on PC/Mac). |
+
+> **Tip:** If you are unsure, try the `arm64-v8a` version first. If it fails to install, try `armeabi-v7a`.
 
 ## Install
 

@@ -1,11 +1,12 @@
-import 'package:device_apps/device_apps.dart';
+import 'package:installed_apps/installed_apps.dart';
+import 'package:installed_apps/app_info.dart';
 
 class AppsApiProvider {
-  Future<List<Application>> fetchAppList() async {
-    List<Application> apps = await DeviceApps.getInstalledApplications(
-        includeAppIcons: true,
-        includeSystemApps: true,
-        onlyAppsWithLaunchIntent: true);
+  Future<List<AppInfo>> fetchAppList() async {
+    List<AppInfo> apps = await InstalledApps.getInstalledApps(
+        excludeSystemApps: false,
+        withIcon: true,
+    );
 
     return apps;
   }
